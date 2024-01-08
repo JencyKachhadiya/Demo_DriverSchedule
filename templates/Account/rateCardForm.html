@@ -1,0 +1,964 @@
+{% extends "main/main.html" %} {% load static %} {% block title %} | Rate Card Form
+request {% endblock %} {% block headStyle %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<style>
+    .cuatom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(238 118 118) !important;
+    }
+
+    @media (max-width: 576px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    input[type="checkbox"]+label {
+        margin: 0px;
+        margin-top: 0.2rem;
+        margin-left: 0.3rem;
+    }
+</style>
+{% endblock %} {% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            {% if rateCard %}
+                <div class="x_panel col-md-12 col-sm-12">
+                    <h2>View old rate card :-</h2>
+                    <hr>
+                    <form action="{% url 'Account:rateCardView' id=rateCard.id%}" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="oldRateCardStartDate">Start Date :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" type="date" name="oldRateCardStartDate" required='required' onchange="setEndDate(this,'oldRateCardEndDate')" id="oldRateCardStartDate">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="oldRateCardEndDate">End Date :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control"  type="date" name="oldRateCardEndDate" required='required' readonly id="oldRateCardEndDate" onchange="getOldRateCards()">
+                                </div>
+                            </div>
+                            <div class="col-md-4" style="padding-top: 1.7rem;">
+                                <select name="rateCard" id="rateCard" class="form-control" disabled>
+                                     {% comment %} {% for dates in rateCardDates %}
+                                    <option value="{{dates|escape}}">{{dates|escape}}</option>
+                                    {% endfor %}  {% endcomment %}
+                                </select>
+                            </div>
+                            <div class="col-md-2" style="padding-top: 1.7rem;">
+                                <input type="submit" value="Get" class="btn btn-default px-5">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+           
+            <div class="col-md-12 col-sm-12">
+                <form class="" method="POST" action="{% if rateCard %}{% else %}{% url 'Account:rateCardSave' %}{% endif %}" novalidate enctype="multipart/form-data" id="myForm">
+                    {% csrf_token %}
+                    <!--Start Rate Care Name  -->
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Add Rate Card Form :-</h2>
+                            {% if rateCard %}
+                                <label id="editRateCard" class="btn btn-default float-right" onclick="rateRevision({{rateCard.id}},0)">Edit rate card </label>
+                                <label id="rateRevision" class="btn btn-default float-right" onclick="rateRevision({{rateCard.id}})">Rate revision <input type="hidden" name="rateRevisionVal" id="rateRevisionVal" value="open"> </label>
+                           {% endif %}
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="rate_card_name">Rate Card Name :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{% if rateCard %}{{rateCard.rate_card_name}}{% endif %}" {% if rateCard %}readonly{% endif %} type="text" name="rate_card_name" required='required' style="padding: 0.25rem 0.2rem;" id="rate_card_name">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="startDate">Start Date :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{% if rateCard %}{{startDate}}{% endif %}" {% if rateCard %}readonly{% endif %} type="date" name="startDate" required='required' style="padding: 0.25rem 0.2rem;" id="startDate" onchange="setEndDate(this,'endDate')">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="endDate">End Date :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{% if rateCard %}{{endDate}}{% endif %}" readonly type="date" name="endDate" required='required' style="padding: 0.25rem 0.2rem;" id="endDate">
+                                        <input class="form-control" value="{{clientId}}" name="clientName" type="hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- End Rate Card Form  -->
+
+                    <!-- Start CostParameters  -->
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Cost Parameters Form :-</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">         
+                            <div class="custom-continer">
+                                <!-- loading_cost_per_cubic_meter,km_cost,surcharge_fixed_normal_cost,surcharge_fixed_sunday_cost -->
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="loading_cost_per_cubic_meter">Load Fee ($/m<sup>3</sup>):<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" required type="number"
+                                            name="costParameters_loading_cost_per_cubic_meter" pattern="[0-9]*" required
+                                            data-validate-length-range="0,5" style="padding: 0.25rem 0.2rem;"
+                                            value="{% if costParameters %}{{costParameters.loading_cost_per_cubic_meter}}{% endif %}" 
+                                            {% if costParameters %} readonly{% endif %}
+                                            id="loading_cost_per_cubic_meter">
+                                            
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="km_cost">Run Rate($/m<sup>3</sup>/km) :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" name="costParameters_km_cost" required='required'
+                                        value="{% if costParameters %}{{costParameters.km_cost}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            style="padding: 0.25rem 0.2rem;" id="km_cost">
+                                    </div>
+                                </div>
+                                {% comment %} <div class="col-md-3 col-sm-3">
+                                    <label for="costParameters_surcharge_type">Surcharge Type :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select name="costParameters_surcharge_type" class="form-control" id="costParameters_surcharge_type" {% if costParameters %} disabled{% endif %}>
+                                            {%for surcharge in surcharges %}
+                                            <option value="{{surcharge.id}}" {% if costParameters.surcharge_type_id == surcharge.id %}selected{% endif %}>{{surcharge.surcharge_Name}}</option>
+                                            {% endfor%}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="surcharge_cost">Surcharge  cost :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" name="costParameters_surcharge_cost"
+                                        value="{% if costParameters %}{{costParameters.surcharge_cost}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="surcharge_cost">
+                                    </div>
+                                </div> {% endcomment %}
+
+                                <!-- transfer_cost,return_load_cost,return_km_cost,standby_time_slot_size,standby_cost_per_slot -->
+
+
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="transfer_cost">Unloaded Kms($/m<sup>3</sup>) :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" name="costParameters_transfer_cost"
+                                        value="{% if costParameters %}{{costParameters.transfer_cost}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="transfer_cost">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="return_load_cost">Return Load cost :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" name="costParameters_return_load_cost" required='required'
+                                        value="{% if costParameters %}{{costParameters.return_load_cost}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            style="padding: 0.25rem 0.2rem;" id="return_load_cost">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="return_km_cost">Return Km cost :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" name="costParameters_return_km_cost" required='required'
+                                        value="{% if costParameters %}{{costParameters.return_km_cost}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            style="padding: 0.25rem 0.2rem;" id="return_km_cost">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="standby_time_slot_size">Standby time slot size :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" name="costParameters_standby_time_slot_size"
+                                        value="{% if costParameters %}{{costParameters.standby_time_slot_size}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="standby_time_slot_size">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="standby_cost_per_slot">Standby Cost ($/slot)  :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" name="costParameters_standby_cost_per_slot"
+                                        value="{% if costParameters %}{{costParameters.standby_cost_per_slot}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="standby_cost_per_slot">
+                                    </div>
+                                </div>
+
+                                <!-- ,waiting_cost_per_minute,call_out_fees,demurrage_fees,start_date -->
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="waiting_cost_per_minute">Waiting Time($/min) :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" name="costParameters_waiting_cost_per_minute"
+                                        value="{% if costParameters %}{{costParameters.waiting_cost_per_minute}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="waiting_cost_per_minute">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="call_out_fees"> Call out fees :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" name="costParameters_call_out_fees"
+                                        value="{% if costParameters %}{{costParameters.call_out_fees}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="call_out_fees">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="demurrage_fees">Demurrage fees :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" min="0" name="costParameters_demurrage_fees"
+                                        value="{% if costParameters %}{{costParameters.demurrage_fees}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            required='required' data-valid-length-range="0"
+                                            style="padding: 0.25rem 0.2rem;" id="demurrage_fees">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="costParameters_cancellation_fees">Cancellation fees :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="number" min="0" name="costParameters_cancellation_fees"
+                                        value="{% if costParameters %}{{costParameters.cancellation_fees}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            required='required' data-valid-length-range="0"
+                                            style="padding: 0.25rem 0.2rem;" id="costParameters_cancellation_fees">
+                                    </div>
+                                </div>
+                                <!-- {{costParameters.start_date}} -->
+                                <!-- <div class="col-md-3 col-sm-3">
+                                    <label for="costParameters_start_date">Start date :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="date" name="costParameters_start_date" required='required'
+                                        value="{% if costParameters %}{{costParameters.start_date}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            style="padding: 0.25rem 0.2rem;" id="costParameters_start_date">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                    <label for="costParameters_end_date">End date :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="date" name="costParameters_end_date" required='required'
+                                        value="{% if costParameters %}{{costParameters.end_date}}{% endif %}" 
+                                            {% if costParameters %} readonly {% endif %}
+                                            style="padding: 0.25rem 0.2rem;" id="costParameters_end_date">
+                                    </div>
+                                </div> -->
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End CostParameters -->
+
+                    <!-- Start ThresholdDayShift -->
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Threshold Day Shift Form :-</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+                                <div class="col-md-8 col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <!-- start_date,threshold_amount_per_day_shift,min_load_in_cubic_meters,min_load_in_cubic_meters_return_to_yard,min_load_in_cubic_meters_return_to_yard,return_load_grace -->
+                                            
+                                            <!-- <div class="col-xl-4 col-md-6">
+                                                <label for="thresholdDayShift_start_date">Start date :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control" type="date" name="thresholdDayShift_start_date"required='required'
+                                                    value="{% if thresholdDayShift %}{{thresholdDayShift.start_date}}{% endif %}" 
+                                                            {% if thresholdDayShift %} readonly {% endif %}
+                                                     style="padding: 0.25rem 0.2rem;"id="thresholdDayShift_start_date">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-md-6">
+                                                <label for="thresholdDayShift_end_date">End date :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control" type="date" name="thresholdDayShift_end_date"required='required'
+                                                    value="{% if thresholdDayShift %}{{thresholdDayShift.end_date}}{% endif %}" 
+                                                            {% if thresholdDayShift %} readonly {% endif %}
+                                                     style="padding: 0.25rem 0.2rem;"id="thresholdDayShift_end_date">
+                                                </div>
+                                            </div> -->
+                                            <div class="col-xl-4 col-md-6">
+                                                <label for="threshold_amount_per_day_shift">Threshold amount per day shift :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdDayShift_threshold_amount_per_day_shift" required='required'
+                                                    value="{% if thresholdDayShift %}{{thresholdDayShift.threshold_amount_per_day_shift}}{% endif %}" 
+                                                            {% if thresholdDayShift %} readonly {% endif %}
+                                                        style="padding: 0.25rem 0.2rem;" id="threshold_amount_per_day_shift">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-md-6">
+                                                <label for="min_load_in_cubic_meters">Min load in cubic meters :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdDayShift_min_load_in_cubic_meters" pattern="[0-9]*" required 
+                                                    value="{% if thresholdDayShift %}{{thresholdDayShift.min_load_in_cubic_meters}}{% endif %}" 
+                                                            {% if thresholdDayShift %} readonly {% endif %} style="padding: 0.25rem 0.2rem;" id="min_load_in_cubic_meters">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-md-6">
+                                                <label for="min_load_in_cubic_meters_return_to_yard">Min load in cubic meters return to yard :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdDayShift_min_load_in_cubic_meters_return_to_yard" required='required'
+                                                    value="{% if thresholdDayShift %}{{thresholdDayShift.min_load_in_cubic_meters_return_to_yard}}{% endif %}" 
+                                                            {% if thresholdDayShift %} readonly {% endif %}
+                                                        style="padding: 0.25rem 0.2rem;" id="min_load_in_cubic_meters_return_to_yard">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6">
+                                                <label for="thresholdDayShift_return_to_yard_grace">Return To Yard Grace :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdDayShift_return_to_yard_grace" required='required'
+                                                    value="{% if thresholdDayShift %}{{thresholdDayShift.return_to_yard_grace}}{% endif %}" 
+                                                            {% if thresholdDayShift %} readonly {% endif %}
+                                                        style="padding: 0.25rem 0.2rem;" id="thresholdDayShift_return_to_yard_grace">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6">
+                                                <label for="thresholdDayShift_return_to_tipping_grace">Return To tipping Site Grace :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdDayShift_return_to_tipping_grace" required='required'
+                                                    value="{% if thresholdDayShift %}{{thresholdDayShift.return_to_tipping_grace}}{% endif %}" 
+                                                            {% if thresholdDayShift %} readonly {% endif %}
+                                                        style="padding: 0.25rem 0.2rem;" id="thresholdDayShift_return_to_tipping_grace">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6">
+                                            <!-- loading_cost_per_cubic_meter_included,surcharge_fixed_normal_cost_included,surcharge_fixed_sunday_cost_included,surcharge_fixed_public_holiday_cost_included,surcharge_per_cubic_meters_normal_cost_included,surcharge_per_cubic_meters_sunday_cost_included,surcharge_per_cubic_meters_public_holiday_cost_included, -->
+                                           
+                                            <div class="field item form-group">
+                                                <input  type="checkbox" name="thresholdDayShift_loading_cost_per_cubic_meter_included" 
+                                                {% if thresholdDayShift.loading_cost_per_cubic_meter_included %}checked{% endif %}
+                                                {% if thresholdDayShift %}disabled{% endif %} id="loading_cost_per_cubic_meter_included">
+                                                <label for="loading_cost_per_cubic_meter_included" >Load Fee /m<sup>3</sup> </label>
+                                            </div>
+                                            
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdDayShift_surcharge_included"
+                                                {% if thresholdDayShift.surcharge_included %}checked{% endif %}
+                                                {% if thresholdDayShift %}disabled{% endif %} id="thresholdDayShift_surcharge_included">
+                                                <label for="thresholdDayShift_surcharge_included" >Surcharge Included</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <!-- ,km_cost_included,transfer_cost_included,return_cost_included,standby_cost_included,waiting_cost_included,call_out_fees_included,demurrage_fees_included -->
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdDayShift_km_cost_included"
+                                                {% if thresholdDayShift.km_cost_included %}checked{% endif %}
+                                                {% if thresholdDayShift %}disabled{% endif %} id="km_cost_included">
+                                                <label for="km_cost_included" >Run Rate Included</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdDayShift_transfer_cost_included"
+                                                {% if thresholdDayShift.transfer_cost_included %}checked{% endif %}
+                                                {% if thresholdDayShift %}disabled{% endif %}  id="transfer_cost_included">
+                                                <label for="transfer_cost_included"> Unloaded Kms Included </label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdDayShift_return_cost_included"
+                                                {% if thresholdDayShift.return_cost_included %}checked{% endif %}
+                                                {% if thresholdDayShift %}disabled{% endif %} id="return_cost_included">
+                                                <label for="return_cost_included" >Return Concrete Included</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdDayShift_standby_cost_included"
+                                                {% if thresholdDayShift.standby_cost_included %}checked{% endif %}
+                                                {% if thresholdDayShift %}disabled{% endif %} id="standby_cost_included">
+                                                <label for="standby_cost_included" >Standby Fees Included</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdDayShift_waiting_cost_included"
+                                                {% if thresholdDayShift.waiting_cost_included %}checked{% endif %}
+                                                {% if thresholdDayShift %}disabled{% endif %} id="waiting_cost_included">
+                                                <label for="waiting_cost_included" >Waiting Time Included</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdDayShift_call_out_fees_included"
+                                                {% if thresholdDayShift.call_out_fees_included %}checked{% endif %}
+                                                {% if thresholdDayShift %}disabled{% endif %} id="call_out_fees_included">
+                                                <label for="call_out_fees_included" >Call Out Fees Included</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- End ThresholdDayShift -->
+
+                    <!--Start Threshold Night Shift  -->
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Threshold  Night Form :-</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+                                <div class="col-md-8 col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <!-- start_date,end_date,threshold_amount_per_night_shift,min_load_in_cubic_meters,min_load_in_cubic_meters_return_to_yard,min_load_in_cubic_meters_return_to_yard,return_load_grace -->
+                                            
+                                            <!-- <div class="col-md-4 col-sm-4">
+                                                <label for="thresholdNightShift_start_date">Start date :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control" type="date" name="thresholdNightShift_start_date"required='required'
+                                                    value="{% if thresholdNightShift %}{{thresholdNightShift.start_date}}{% endif %}" 
+                                                            {% if thresholdNightShift %} readonly {% endif %} style="padding: 0.25rem 0.2rem;"id="thresholdNightShift_start_date">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-xl-4 col-md-6">
+                                                <label for="thresholdNightShift_end_date">End date :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control" type="date" name="thresholdNightShift_end_date"required='required'
+                                                    value="{% if thresholdNightShift %}{{thresholdNightShift.end_date}}{% endif %}" 
+                                                            {% if thresholdNightShift %} readonly {% endif %} style="padding: 0.25rem 0.2rem;"id="thresholdNightShift_end_date">
+                                                </div>
+                                            </div> -->
+                                            <div class="col-xl-4 col-md-6">
+                                                <label for="thresholdNightShift_threshold_amount_per_night_shift">Threshold amount per night shift :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdNightShift_threshold_amount_per_night_shift" required='required'
+                                                    value="{% if thresholdNightShift %}{{thresholdNightShift.threshold_amount_per_night_shift}}{% endif %}" 
+                                                            {% if thresholdNightShift %} readonly {% endif %}
+                                                        style="padding: 0.25rem 0.2rem;" id="thresholdNightShift_threshold_amount_per_night_shift">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-md-6">
+                                                <label for="thresholdNightShift_min_load_in_cubic_meters">Min load in cubic meters :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdNightShift_min_load_in_cubic_meters" pattern="[0-9]*" required  
+                                                    value="{% if thresholdNightShift %}{{thresholdNightShift.min_load_in_cubic_meters}}{% endif %}" 
+                                                            {% if thresholdNightShift %} readonly {% endif %}style="padding: 0.25rem 0.2rem;" id="thresholdNightShift_min_load_in_cubic_meters">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-md-6">
+                                                <label for="thresholdNightShift_min_load_in_cubic_meters_return_to_yard">Min load in cubic meters return to yard :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdNightShift_min_load_in_cubic_meters_return_to_yard"
+                                                    value="{% if thresholdNightShift %}{{thresholdNightShift.min_load_in_cubic_meters_return_to_yard}}{% endif %}" 
+                                                            {% if thresholdNightShift %} readonly {% endif %} required='required'
+                                                        style="padding: 0.25rem 0.2rem;" id="thresholdNightShift_min_load_in_cubic_meters_return_to_yard">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 col-sm-6">
+                                                <label for="thresholdNightShift_return_to_yard_grace">Return To Yard Grace :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdNightShift_return_to_yard_grace" required='required'
+                                                    value="{% if thresholdNightShift %}{{thresholdNightShift.return_to_yard_grace}}{% endif %}" 
+                                                            {% if thresholdNightShift %} readonly {% endif %}
+                                                        style="padding: 0.25rem 0.2rem;" id="thresholdNightShift_return_to_yard_grace">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6">
+                                                <label for="thresholdNightShift_return_to_tipping_grace">Return To tipping Site Grace :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number" name="thresholdNightShift_return_to_tipping_grace" required='required'
+                                                    value="{% if thresholdNightShift %}{{thresholdNightShift.return_to_tipping_grace}}{% endif %}" 
+                                                            {% if thresholdNightShift %} readonly {% endif %}
+                                                        style="padding: 0.25rem 0.2rem;" id="thresholdNightShift_return_to_tipping_grace">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6">
+                                            <!-- loading_cost_per_cubic_meter_included,surcharge_included,surcharge_fixed_sunday_cost_included,surcharge_fixed_public_holiday_cost_included,surcharge_per_cubic_meters_normal_cost_included,surcharge_per_cubic_meters_sunday_cost_included,surcharge_per_cubic_meters_public_holiday_cost_included, -->
+                                           
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdNightShift_loading_cost_per_cubic_meter_included" 
+                                                {% if thresholdNightShift.loading_cost_per_cubic_meter_included %}checked{% endif %}
+                                                {% if thresholdNightShift %}disabled{% endif %} id="thresholdNightShift_loading_cost_per_cubic_meter_included">
+                                                <label for="thresholdNightShift_loading_cost_per_cubic_meter_included" >Load Fee /m<sup>3</sup> </label>
+                                            </div>
+                                            
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdNightShift_surcharge_included"
+                                                {% if thresholdNightShift.surcharge_included %}checked{% endif %}
+                                                {% if thresholdNightShift %}disabled{% endif %} id="thresholdNightShift_surcharge_included">
+                                                <label for="thresholdNightShift_surcharge_included" >Surcharge Included</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <!-- ,km_cost_included,transfer_cost_included,return_cost_included,standby_cost_included,waiting_cost_included,call_out_fees_included,demurrage_fees_included -->
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdNightShift_km_cost_included"
+                                                {% if thresholdNightShift.km_cost_included %}checked{% endif %}
+                                                {% if thresholdNightShift %}disabled{% endif %} id="thresholdNightShift_km_cost_included">
+                                                <label for="thresholdNightShift_km_cost_included" >Run Rate Included</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdNightShift_transfer_cost_included" 
+                                                {% if thresholdNightShift.transfer_cost_included %}checked{% endif %}
+                                                {% if thresholdNightShift %}disabled{% endif %} id="thresholdNightShift_transfer_cost_included">
+                                                <label for="thresholdNightShift_transfer_cost_included" > Unloaded Kms Included </label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdNightShift_return_cost_included"
+                                                {% if thresholdNightShift.return_cost_included %}checked{% endif %}
+                                                {% if thresholdNightShift %}disabled{% endif %} id="thresholdNightShift_return_cost_included">
+                                                <label for="thresholdNightShift_return_cost_included" >Return Concrete Included</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdNightShift_standby_cost_included"
+                                                {% if thresholdNightShift.standby_cost_included %}checked{% endif %}
+                                                {% if thresholdNightShift %}disabled{% endif %} id="thresholdNightShift_standby_cost_included">
+                                                <label for="thresholdNightShift_standby_cost_included" >Standby Fees Included</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdNightShift_waiting_cost_included"
+                                                {% if thresholdNightShift.waiting_cost_included %}checked{% endif %}
+                                                {% if thresholdNightShift %}disabled{% endif %} id="thresholdNightShift_waiting_cost_included">
+                                                <label for="thresholdNightShift_waiting_cost_included" >Waiting Time Included</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="thresholdNightShift_call_out_fees_included"
+                                                {% if thresholdNightShift.call_out_fees_included %}checked{% endif %}
+                                                {% if thresholdNightShift %}disabled{% endif %} id="thresholdNightShift_call_out_fees_included">
+                                                <label for="thresholdNightShift_call_out_fees_included" >Call Out Fees Included</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- End Threshold Night Shift  -->
+
+                    <!--Start Grace  -->
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Grace Form :-</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+                                <!-- load_km_grace,transfer_km_grace,return_km_grace -->
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="load_km_grace">load km grace :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" " type="number"
+                                        value="{% if grace %}{{grace.load_km_grace}}{% endif %}" 
+                                        {% if grace %} readonly {% endif %} name="grace_load_km_grace"
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="load_km_grace">
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="transfer_km_grace">Transfer km grace :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" " type="number"
+                                        value="{% if grace %}{{grace.transfer_km_grace}}{% endif %}" 
+                                        {% if grace %} readonly {% endif %} name="grace_transfer_km_grace"
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="transfer_km_grace">
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="return_km_grace">Return km grace :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" " type="number"
+                                        value="{% if grace %}{{grace.return_km_grace}}{% endif %}" 
+                                        {% if grace %} readonly {% endif %} name="grace_return_km_grace"
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="return_km_grace">
+                                    </div>
+                                </div>
+                                <!-- standby_time_grace_in_minutes,chargeable_standby_time_starts_after,waiting_time_grace_in_minutes -->
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="standby_time_grace_in_minutes">Standby time grace in minutes :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" " type="number"
+                                        value="{% if grace %}{{grace.standby_time_grace_in_minutes}}{% endif %}" 
+                                        {% if grace %} readonly {% endif %} name="grace_standby_time_grace_in_minutes"
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="standby_time_grace_in_minutes">
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="chargeable_standby_time_starts_after">Chargeable standby time starts after :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" " type="number"
+                                        value="{% if grace %}{{grace.chargeable_standby_time_starts_after}}{% endif %}" 
+                                        {% if grace %} readonly {% endif %} name="grace_chargeable_standby_time_starts_after"
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="chargeable_standby_time_starts_after">
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="waiting_time_grace_in_minutes">Waiting time grace in minutes :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" " type="number"
+                                        value="{% if grace %}{{grace.waiting_time_grace_in_minutes}}{% endif %}" 
+                                        {% if grace %} readonly {% endif %} name="grace_waiting_time_grace_in_minutes"
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="waiting_time_grace_in_minutes">
+                                    </div>
+                                </div>
+                                <!-- chargeable_waiting_time_starts_after,start_date,end_date -->
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="chargeable_waiting_time_starts_after">Chargeable waiting time starts after :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" " type="number"
+                                        value="{% if grace %}{{grace.chargeable_waiting_time_starts_after}}{% endif %}" 
+                                        {% if grace %} readonly {% endif %} name="grace_chargeable_waiting_time_starts_after"
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="chargeable_waiting_time_starts_after">
+                                    </div>
+                                </div>
+                                <!-- <div class="col-xl-4 col-md-6">
+                                    <label for="grace_start_date">Start date :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" " type="date" name="grace_start_date"
+                                        value="{% if grace %}{{grace.start_date}}{% endif %}" 
+                                        {% if grace %} readonly {% endif %}
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="grace_start_date">
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="grace_end_date">End date :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="date" name="grace_end_date"
+                                        value="{% if grace %}{{grace.end_date}}{% endif %}" 
+                                        {% if grace %} readonly {% endif %}
+                                            required='required' style="padding: 0.25rem 0.2rem;" id="grace_end_date">
+                                    </div>
+                                </div> -->
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- End Grace  -->
+
+                    <!--Start OnLease Name  -->
+                    {% comment %} <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Wet Hire Rates :-</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <!-- hourly_subscription_charge,daily_subscription_charge,monthly_subscription_charge,quarterly_subscription_charge, -->
+                                            <!-- <div class="col-md-6 col-sm-6">
+                                                <label for="onLease_qstart_date">Start date :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="date" name="onLease_start_date"
+                                                    value="{% if onLease %}{{onLease.start_date}}{% endif %}" 
+                                                            {% if onLease %} readonly {% endif %}
+                                                        required='required' style="padding: 0.25rem 0.2rem;" id="onLease_qstart_date">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-6 col-sm-6">
+                                                <label for="hourly_subscription_charge">Hourly subscription charge :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number"  name="onLease_hourly_subscription_charge" 
+                                                     value="{% if onLease %}{{onLease.hourly_subscription_charge}}{% endif %}" 
+                                                            {% if onLease %} readonly {% endif %} required='required'
+                                                        style="padding: 0.25rem 0.2rem;" id="hourly_subscription_charge">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6">
+                                                <label for="daily_subscription_charge">Daily subscription charge:<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number"  name="onLease_daily_subscription_charge" 
+                                                     value="{% if onLease %}{{onLease.daily_subscription_charge}}{% endif %}" 
+                                                            {% if onLease %} readonly {% endif %}  required  style="padding: 0.25rem 0.2rem;" id="daily_subscription_charge">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6">
+                                                <label for="weekly_subscription_charge">Weekly subscription charge :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number"  name="onLease_weekly_subscription_charge"
+                                                     value="{% if onLease %}{{onLease.weekly_subscription_charge}}{% endif %}" 
+                                                            {% if onLease %} readonly {% endif %}  required='required'
+                                                        style="padding: 0.25rem 0.2rem;" id="weekly_subscription_charge">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6">
+                                                <label for="over_time_charge">Over Time Charge :<span class="required">*</span></label>
+                                                <div class="field item form-group">
+                                                    <input class="form-control"  type="number"  name="onLease_over_time_charge"
+                                                     value="{% if onLease %}{{onLease.over_time_charge}}{% endif %}" 
+                                                            {% if onLease %} readonly {% endif %}  required='required'
+                                                        style="padding: 0.25rem 0.2rem;" id="over_time_charge">
+                                                </div>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="row">
+                                        <div class="col-md-7 col-sm-7">
+                                            <!-- surcharge_fixed_normal_cost_included,surcharge_fixed_sunday_cost_included,surcharge_fixed_public_holiday_cost_included,surcharge_per_cubic_meters_normal_cost_included,surcharge_per_cubic_meters_sunday_cost_included,surcharge_per_cubic_meters_public_holiday_cost_included, -->
+                                                                                       
+
+                                            
+                                        </div>
+                                        <div class="col-md-5 col-sm-5">
+                                            <!-- ,transfer_cost_applicable,return_cost_applicable,standby_cost_per_slot_applicable,waiting_cost_per_minute_applicable,call_out_fees_applicable_included, -->
+                                            <!-- <div class="field item form-group">
+                                                <input   type="checkbox" name="onLease_transfer_cost_applicable"
+                                                {% if onLease.transfer_cost_applicable %}checked{% endif %}
+                                                {% if onLease %}disabled{% endif %} id="transfer_cost_applicable">
+                                                <label for="transfer_cost_applicable" >Transfer cost applicable</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="onLease_return_cost_applicable" 
+                                                {% if onLease.return_cost_applicable %}checked{% endif %}
+                                                {% if onLease %}disabled{% endif %} id="return_cost_applicable">
+                                                <label for="return_cost_applicable" >Return cost applicable </label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="onLease_standby_cost_per_slot_applicable"
+                                                {% if onLease.standby_cost_per_slot_applicable %}checked{% endif %}
+                                                {% if onLease %}disabled{% endif %} id="standby_cost_per_slot_applicable">
+                                                <label for="standby_cost_per_slot_applicable" >Standby cost per slot applicable</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="onLease_waiting_cost_per_minute_applicable"
+                                                {% if onLease.waiting_cost_per_minute_applicable %}checked{% endif %}
+                                                {% if onLease %}disabled{% endif %} id="waiting_cost_per_minute_applicable">
+                                                <label for="waiting_cost_per_minute_applicable" >Waiting cost per minute applicable</label>
+                                            </div>
+                                            <div class="field item form-group">
+                                                <input   type="checkbox" name="onLease_call_out_fees_applicable_included"
+                                                {% if onLease.call_out_fees_applicable_included %}checked{% endif %}
+                                                {% if onLease %}disabled{% endif %} id="call_out_fees_applicable_included">
+                                                <label for="call_out_fees_applicable_included" >Call out fees applicable included</label>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                            </div>
+                        </div>
+
+                    </div> {% endcomment %}
+                    <!-- End OnLease Form  -->
+
+                    <!-- Start Surcharge  -->
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Surcharge Form :-</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">         
+                            <div class="custom-continer">
+                                {% if rateCardSurcharges %}
+                                {%for surcharge in rateCardSurcharges %}
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="{{surcharge.id}}">{{surcharge.surcharge.surcharge_Name}} :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                        name="{{surcharge.id}}"
+                                        value = "{% if surcharge %}{{surcharge.surchargeValue}}{% endif %}"
+                                        {% if surcharge %} readonly {% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="{{surcharge.id}}">
+                                    </div>
+                                </div>
+                                {% endfor%}
+                                {% elif surchargesEntry %}
+                                {%for surcharge in surchargesEntry %}
+                                <div class="col-xl-4 col-md-6">
+                                    <label for="{{surcharge.id}}">{{surcharge.surcharge_Name}} :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                        name="{{surcharge.id}}"
+                                        value = "0"
+                                        
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="{{surcharge.id}}">
+                                    </div>
+                                </div>
+                                {% endfor%}
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Surcharge -->
+
+                    <div class="col-md-12 text-right" id="submitBtn">
+                        {% if not rateCard %}
+                        <button type='submit' class="btn btn-primary px-4">Submit</button>
+                       {% endif %}
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+{% endblock %}
+
+{% block footerStyleEnd %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+    const csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    $(document).ready(function () {
+        $('#myForm').submit(function (event) {
+            var errorFound = false;
+            $('#myForm input[type="number"]').each(function () {
+                var inputValue = $(this).val();
+                if (inputValue == '' || inputValue < 0) {
+                    $(this).addClass('isInvalid')
+                    errorFound = true
+                } else {
+                    $(this).removeClass('isInvalid')
+                }
+            });
+            $('#myForm input[type="date"]').each(function () {
+                var inputValue = $(this).val();
+                if (inputValue == '') {
+                    $(this).addClass('isInvalid')
+                    errorFound = true
+                } else {
+                    $(this).removeClass('isInvalid')
+                }
+            });
+            $('#myForm input[type="text"]').each(function () {
+                var inputValue = $(this).val();
+                if (inputValue == '') {
+                    $(this).addClass('isInvalid')
+                    errorFound = true
+                } else {
+                    $(this).removeClass('isInvalid')
+                }
+            });
+            if (errorFound) {
+                event.preventDefault();
+            }
+        });
+    });
+
+
+    function rateRevision(id,value=null){
+        rateRevisionVal = $("#rateRevisionVal").val()
+        console.log(rateRevisionVal)
+        if(rateRevisionVal == "open"){
+            event.preventDefault();
+            $('input').each(function () {
+                $(this).removeAttr('readonly')
+                $(this).removeAttr('disabled')
+            });
+            $('select').each(function () {
+                $(this).removeAttr('readonly')
+                $(this).removeAttr('disabled')
+            });
+            if(value != 0){
+                $('#myForm').attr("action",`/account/RateCard/revision/${id}/`)
+                $('input[type="date"]').each(function(){
+                    $(this).val('')
+                })
+            }else{
+                $('#myForm').attr("action",`/account/RateCard/revision/${id}/${1}/`)
+                $('input[type="date"]').each(function(){
+                    $(this).prop('readonly', true);
+                })
+            }
+            $("#submitBtn").append(`<button type='submit' class="btn btn-primary px-4">Submit</button>`);
+            $('#rate_card_name').attr('readonly', true);
+            $("#rateRevisionVal").val('close');
+            $("#oldRateCardStartDate").attr('readonly',true)
+            $("#oldRateCardEndDate").attr('readonly',true)
+            $("#rateCard").attr('disabled',true)
+        }
+    };
+
+    function setEndDate(dataRow,endDateId){
+        let oldRateCardStartDate = $(`#${dataRow.id}`).val()
+        $(`#${endDateId}`).attr('min', oldRateCardStartDate);
+        $(`#${endDateId}`).removeAttr('readonly')
+    };
+
+    function getOldRateCards(){
+        let oldRateCardStartDate = $(`#oldRateCardStartDate`).val()
+        let oldRateCardEndDate = $(`#oldRateCardEndDate`).val()
+        let rateCardId = {{ rateCard.id }}
+        // console.log({{ rateCard.id }})
+
+        $.ajax({
+            url: "/account/getOld/rateCards/",
+            method: "POST",
+            data: {
+                'startDate' : oldRateCardStartDate,
+                'endDate' : oldRateCardEndDate,
+                'rateCardId' : rateCardId
+            },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            success: function (data) {
+                console.log(data)
+
+                data.rateCardDates.forEach(function (item) {
+                    $("#rateCard").append(
+                        `<option value="${item}">${item}</option>`
+                    );
+                });
+
+                $('#rateCard').removeAttr('disabled')
+            },
+        });
+    };
+</script>
+
+{% endblock %}

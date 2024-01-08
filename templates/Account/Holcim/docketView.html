@@ -1,0 +1,332 @@
+{% extends "main/main.html" %} {% load static %} {% block title %} | Holcim Docket {% endblock %} {% block headStyle %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<style>
+    .cuatom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(255, 0, 0) !important;
+        border-radius: 7px !important;
+    }
+
+    @media (max-width: 576px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+</style>
+{% endblock %} {% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <form class="" method="POST" action="#" novalidate enctype="multipart/form-data"> 
+                    {% csrf_token %}
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Holcim Trip  </h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+
+                                <!-- basePlant noOfKm  transferKM  -->
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="vehicle">Vehicle No :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="vehicle" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="vehicle" {% if docketData%} readonly  {% endif%}   value="{% if holcimTripObj %}{{holcimTripObj.truckNo}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="shiftDate">ShiftDate :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="shiftDate" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="shiftDate" {% if docketData%} readonly  {% endif%}   value="{% if holcimTripObj %}{{holcimTripObj.shiftDate}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="jobNo">No Of Loads :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="jobNo" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="jobNo" {% if docketData%} readonly  {% endif%}   value="{% if holcimTripObj %}{{holcimTripObj.numberOfLoads}}{% endif%}" >
+                                    </div>
+                                </div>
+                                
+
+                            </div>
+                        </div>
+                    </div>
+                    {% for docketData in docketData %}
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Holcim Docket  </h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+
+                                <!-- basePlant noOfKm  transferKM  -->
+                                
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="orderNo">Order No :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="orderNo" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="orderNo" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.orderNo}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="jobNo">job No :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="jobNo" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="jobNo" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.jobNo}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="status">Status  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} date {% endif%}"
+                                            name="status" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="status" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.status}}{% endif%}" >
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="ticketed">Ticketed Date  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} date {% endif%}"
+                                            name="ticketed" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="ticketed" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.ticketedDate}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="ticketedTime">Ticketed Time  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} date {% endif%}"
+                                            name="ticketedTime" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="ticketedTime" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.ticketedTime}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="load">Load  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} datetime-local {% endif%}"
+                                            name="load" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="load" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.load}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="loadComplete">LoadComplete  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="loadComplete" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="loadComplete" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.loadComplete}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="toJob">ToJob  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} datetime-local {% endif%}"
+                                            name="toJob" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="toJob" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.toJob}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="timeToDepart">TimeToDepart  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="timeToDepart" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="timeToDepart" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.timeToDepart}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="onJob">OnJob  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} datetime-local {% endif%}"
+                                            name="onJob" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="onJob" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.onJob}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="timeToSite">TimeToSite  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="timeToSite" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="timeToSite" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.timeToSite}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="beginUnload">BeginUnload  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} datetime-local {% endif%}"
+                                            name="beginUnload" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="beginUnload" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.beginUnload}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="waitingTime">WaitingTime  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="waitingTime" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="waitingTime" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.waitingTime}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="endPour">EndPour  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} datetime-local {% endif%}"
+                                            name="endPour" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="endPour" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.endPour}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="wash">Wash  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} datetime-local {% endif%}"
+                                            name="wash" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="wash" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.wash}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="toPlant">ToPlant  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} datetime-local {% endif%}"
+                                            name="toPlant" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="toPlant" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.toPlant}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="timeOnSite">TimeOnSite  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="timeOnSite" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="timeOnSite" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.timeOnSite}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="atPlant">AtPlant  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="{% if docketData%} text {%else%} datetime-local {% endif%}"
+                                            name="atPlant" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="atPlant" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.atPlant}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="leadDistance">LeadDistance  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="leadDistance" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="leadDistance" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.leadDistance}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="returnDistance">ReturnDistance  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="returnDistance" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="returnDistance" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.returnDistance}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="totalDistance">TotalDistance  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="totalDistance" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="totalDistance" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.totalDistance}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="totalTime">TotalTime  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="totalTime" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="totalTime" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.totalTime}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="waitTimeBetweenJob">WaitTimeBetweenJob  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="waitTimeBetweenJob" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="waitTimeBetweenJob" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.waitTimeBetweenJob}}{% endif%}" >
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="driverName">DriverName  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="driverName" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="driverName" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.driverName}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="quantity">Quantity  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="quantity" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="quantity" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.quantity}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="slump">Slump  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="slump" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="slump" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.slump}}{% endif%}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="waterAdded">WaterAdded  :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="waterAdded" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="waterAdded" {% if docketData%} readonly  {% endif%}   value="{% if docketData %}{{docketData.waterAdded}}{% endif%}" >
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+{% endblock %}
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+    integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+{% endblock %} 

@@ -1,0 +1,111 @@
+{% extends "Trip_details/main/main.html" %}
+{% load static %}
+{% block title %}View Jobs{% endblock title %}
+
+{% block headStyle %}
+<style>
+    @media (min-width: 992px) {
+        .list-unstyled li strong {
+            display: inline-block;
+            width: 33%;
+            font-weight: bold;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-7 col-sm-12">
+            <table class="table border mt-3 mb-2">
+                <tr>
+                <th class="py-2">Status </th>
+                <td class="py-2">
+                    <span class="badge  {% if job.lateForStart %}bg-danger {% elif job.Status == 'Assigned' and job.notAcceptable == True %} bg-warning {% elif job.Status == 'Assigned' %}bg-default{% elif job.Status == 'Dispatched' %}bg-success{% elif job.Status == 'Complete' %}bg-dark{% endif %}">
+                       {% if job.lateForStart %}Missed{% elif job.Status == "Assigned" %}Pending{% elif job.Status == "Dispatched" %}In Progress{% elif job.Status == 'Complete' %}Complete{% endif %}
+                    </span>
+                </td>
+                </tr>
+                <tr>
+                    <th class="py-2">Title </th>
+                    <td class="py-2"><span>{{job.Title}}</span></td>
+                </tr>
+                <tr>
+                    <th class="py-2">Start Time </th>
+                    <td class="py-2"><span>{{job.Start_Date_Time}}</span></td>
+                </tr>
+                <tr>
+                    <th class="py-2">End Time </th>
+                    <td class="py-2"><span>{{job.End_Date_Time}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="py-2">Report To Origin </th>
+                    <td class="py-2"><span>{{job.report_to_origin}}</span></td>
+                </tr>
+                <tr>
+                    <th class="py-2">Created </th>
+                    <td class="py-2"><span>{{ job.Created_by }}, {{ job.Created_time }}</span></td>
+                </tr>
+                <tr>
+                    <th class="py-2">Client Name </th>
+                    <td class="py-2"><span class="text-uppercase">{{ job.stop }}</span></td>
+                </tr>
+                <tr>
+                    <th class="py-2">Staff Note </th>
+                    <td class="py-2"><span>{{ job.Staff_Notes }}</span></td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-5 col-sm-12">
+            <!-- Origin details section start -->
+            <table class="table border mt-3 mb-2">
+                <tr>
+                    <th class="py-2">Origin </th>
+                    <td class="py-2"><span>{{ job.Origin.basePlant }}</span></td>
+                </tr>
+                <tr>
+                    <th class="py-2">Phone </th>
+                    <td class="py-2"><span><a href="tel:{{ job.Origin.phone }}" class="text-success text-decoration-none font-weight-bold">{{ job.Origin.phone }}</a></span></td>
+                </tr>
+                <tr>
+                    <th class="py-2">Person Name </th>
+                    <td class="py-2"><span>{{ job.Origin.personOnName }}</span></td>
+                </tr>
+                <tr>
+                    <th class="py-2">Manager Name </th>
+                    <td class="py-2"><span>{{ job.Origin.managerName }}</span></td>
+                </tr>
+                <tr>
+                    <th class="py-2">Address </th>
+                    <td class="py-2"><span>{{ job.Origin.address }}</span></td>
+                </tr>
+            </table>
+            <!-- Origin details section end -->
+
+            <!-- Truck details section start -->
+            <div class="div border p-5 mt-4" >
+                <h5 class="card-title text-muted">Truck details displayed here</h5>
+            </div>
+            <!-- Truck details section end -->
+
+        </div>
+    </div>
+    {% if job.Status == "Assigned" %}<hr>{% endif %}
+</div>
+
+{% if job.Status == "Assigned" and not job.lateForStart and job.notAcceptable != True %}
+<div class="container my-3">
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <div class="d-flex justify-content-end">
+                <a href="{% url 'Account:assignedJobAccept' id=job.id%}" class="btn btn-sm btn-default">Accept</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block footerStyle %}
+{% endblock %}

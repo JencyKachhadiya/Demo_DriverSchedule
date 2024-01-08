@@ -1,0 +1,546 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Truck Information tab {% endblock %}
+{% block headStyle %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}" />
+
+<style>
+    .dd-selected{
+        color: black;;
+    }
+    .dd-select a{
+        background-color:white;
+    }
+    .custom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(255, 0, 0) !important;
+        border-radius: 7px !important;
+    }
+    ul.wizard_steps{
+        padding-left: 0;
+    }
+
+    @media (max-width: 576px) {
+        .custom-continer {
+            margin: 0;
+        }
+        .form_wizard{
+            display: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .custom-continer {
+            margin: 0;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="custom-container">
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                     <div class="x_title">
+                        <h2>{% if data %}View truck detailsAdd Truck {% endif %}</h2>
+                        {% if data %}
+                        <a href="{% url 'gearBox:truckConnectionAddView' id=data.id %}" class="btn btn-sm btn-default float-right">Add connection</a>
+                        {% endif %}
+                        <div class="clearfix"></div>
+                     </div>
+               
+                    <div class="x_title">
+                        <h2 class="text-uppercase">Information tab</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div id="wizard" class="form_wizard wizard_horizontal">
+                        <ul class="wizard_steps">
+                          <li>
+                            <a href="javascript:void(0)" class="selected">
+                                <span class="step_no" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Information" fdprocessedid="pifgeg"><i class="fa fa-info"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="disabled">
+                                <span class="step_no"title="" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Axles" fdprocessedid="pifgeg"><i class="fa fa-bars"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="disabled">
+                                <span class="step_no" title="" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Settings" fdprocessedid="pifgeg"><i class="fa fa-gear"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="disabled">
+                                <span class="step_no" title="" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Reminders" fdprocessedid="pifgeg"><i class="fa fa-bell-o"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="disabled">
+                                <span class="step_no" title="" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Parts" fdprocessedid="pifgeg"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="disabled">
+                                <span class="step_no" title="" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="History" fdprocessedid="pifgeg"><i class="fa fa-history"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="disabled">
+                                <span class="step_no" title="" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Odometer" fdprocessedid="pifgeg"><i class="fa  fa-tachometer"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="disabled">
+                                <span class="step_no" title="" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Compliance" fdprocessedid="pifgeg"><i class="fa fa-comments"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="disabled">
+                                <span class="step_no" title="" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Documents" fdprocessedid="pifgeg"><i class="fa fa-file-pdf-o"></i></span>
+                                <span class="step_descr">
+                                    <br/>
+                                </span>
+                            </a>
+                          </li>
+                        </ul>
+                    </div> 
+                    <!-- {% url 'gearBox:truckFormAdd' %} -->
+                    <form action="{% url 'gearBox:truckFormAdd' %}" method="post" class="" novalidate>
+                        {% csrf_token %}
+                        <div class="x_title">
+                            <h6>Mandatory Fields</h6>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="col-md-5 col-sm-5">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="truckNo" style="margin-bottom: 0.3rem!important;">Fleet : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="truckNo" required='required' style="padding: 0.25rem 0.2rem;" id="truckNo">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="groups" style="margin-bottom: 0.3rem!important;">Groups : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <select name="groups" id="groups" class="form-control">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="subGroups" style="margin-bottom: 0.3rem!important;">Sub groups : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <select name="subGroups" id="subGroups" class="form-control">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="vehicleType" style="margin-bottom: 0.3rem!important;">Vehicle type : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <select name="vehicleType" id="vehicleType"  class="form-control">
+                                                <option value="Tipper">Tipper</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="serviceGroup" style="margin-bottom: 0.3rem!important;">Service group : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <select name="serviceGroup" id="serviceGroup"  class="form-control">
+                                                <option value="Tipper">Tipper</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-3">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="img1" style="margin-bottom: 0.3rem!important;">Image 1 :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" type="file" name="img1"  style="padding: 0.25rem 0.2rem;" id="img1">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="img2" style="margin-bottom: 0.3rem!important;">Image 2 :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" type="file" name="img2"  style="padding: 0.25rem 0.2rem;" id="img2">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="img3" style="margin-bottom: 0.3rem!important;">Image 3 :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" type="file" name="img3"  style="padding: 0.25rem 0.2rem;" id="img3">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                       
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6">
+                                <!-- Information -->
+                                <div class="x_title">
+                                    <h6>Information</h6>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="informationMake" style="margin-bottom: 0.3rem!important;">Make : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <select name="informationMake" id="informationMake"  class="form-control">
+                                                <option value="Freightliner">Freightliner</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="informationModel" style="margin-bottom: 0.3rem!important;">Model : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="informationModel" required='required' style="padding: 0.25rem 0.2rem;" id="informationModel">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="informationConfiguration" style="margin-bottom: 0.3rem!important;">Configuration : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <select name="informationConfiguration" id="informationConfiguration"  class="form-control">
+                                                <option value="Tipper">Tipper</option>
+                                            </select>
+                                        </div>
+                                    </div>
+        
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="informationChassis" style="margin-bottom: 0.3rem!important;">VIN / Chassis # : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="informationChassis" required='required' style="padding: 0.25rem 0.2rem;" id="informationChassis">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="informationBuildYear" style="margin-bottom: 0.3rem!important;">Build year : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="number" name="informationBuildYear" required='required' style="padding: 0.25rem 0.2rem;" id="informationBuildYear" data-validate-minmax="1000,9999">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="informationIcon" style="margin-bottom: 0.3rem!important;">Icon : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <select id="informationIcon">
+                                                <option value="Truck_1" 
+                                                    data-imagesrc="{% static 'img/truckIcons/truck01.gif' %}"></option>
+                                                <option value="Truck_2" 
+                                                    data-imagesrc="{% static 'img/truckIcons/truck02.gif' %}"></option>
+                                                <option value="Truck_3" class="bg-danger"  
+                                                    data-imagesrc="{% static 'img/truckIcons/truck03.gif' %}"></option>
+                                                <option value="Truck_4" class="bg-danger"  
+                                                    data-imagesrc="{% static 'img/truckIcons/truck04.gif' %}"></option>
+                                            </select>
+                                            <input type="hidden" name="informationIcon">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <!-- Custom fields -->
+                                <div class="x_title">
+                                    <h6>Custom fields</h6>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                   <div class="col-md-6 col-sm-6">
+                                        <label for="customFuelCard" style="margin-bottom: 0.3rem!important;">Fuel Card :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="customFuelCard" style="padding: 0.25rem 0.2rem;" id="customFuelCard">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="customOldFeetNumber" style="margin-bottom: 0.3rem!important;">Old Fleet Number :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="number" name="customOldFeetNumber" style="padding: 0.25rem 0.2rem;" id="customOldFeetNumber" data-validate-minmax="1000,9999">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="customOldRego" style="margin-bottom: 0.3rem!important;">Old Rego :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="number" name="customOldRego" style="padding: 0.25rem 0.2rem;" id="customOldRego" data-validate-minmax="1000,9999">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="customRegOwner" style="margin-bottom: 0.3rem!important;">Registered Owner :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="customRegOwner" style="padding: 0.25rem 0.2rem;" id="customRegOwner">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="customRoadsideAssistance" style="margin-bottom: 0.3rem!important;">Roadside Assistance :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="number" name="customRoadsideAssistance" style="padding: 0.25rem 0.2rem;" id="customRoadsideAssistance" data-validate-minmax="1000,9999">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="customPdd" style="margin-bottom: 0.3rem!important;">PDD number :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="number" name="customPdd" style="padding: 0.25rem 0.2rem;" id="customPdd" data-validate-minmax="1000,9999">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6" >
+                                <!-- Registration -->
+                                <div class="x_title">
+                                    <h6 class="d-inline-block">Registration</h6>
+                                    <span class="float-right">
+                                        <input type="checkbox" name="unRegistration" id="unRegistration" onchange="registered(this)">
+                                        <label for="unRegistration">Un-Registered</label>
+                                    </span>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content" id="registrationSection">
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="registration" style="margin-bottom: 0.3rem!important;">Registration :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="registration" required='required' style="padding: 0.25rem 0.2rem;" id="registration">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="registrationCode" style="margin-bottom: 0.3rem!important;">Code :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="registrationCode" required='required' style="padding: 0.25rem 0.2rem;" id="registrationCode">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="registrationState" style="margin-bottom: 0.3rem!important;">State : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <select name="registrationState" id="registrationState"  class="form-control">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="registrationDueDate" style="margin-bottom: 0.3rem!important;">Registration Due Date :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="date" name="registrationDueDate" required='required' style="padding: 0.25rem 0.2rem;" id="registrationDueDate">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="registrationInterval" style="margin-bottom: 0.3rem!important;">Interval : <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <select name="registrationInterval" id="registrationInterval"  class="form-control">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <!-- Engine Information -->
+                                <div class="x_title">
+                                    <h6 class="d-inline-block">Engine Information</h6>
+                                    <span class="float-right">
+                                        <input type="checkbox" name="powered" id="powered">
+                                        <label for="powered">Powered</label>
+                                    </span>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="engine" style="margin-bottom: 0.3rem!important;">Engine # :<span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="engine" required='required' style="padding: 0.25rem 0.2rem;" id="engine">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <label for="engineMake" style="margin-bottom: 0.3rem!important;">Make :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="engineMake" style="padding: 0.25rem 0.2rem;" id="engineMake">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="engineModel" style="margin-bottom: 0.3rem!important;">Model :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="engineModel" style="padding: 0.25rem 0.2rem;" id="engineModel">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="engineCapacity" style="margin-bottom: 0.3rem!important;">Capacity :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="engineCapacity" style="padding: 0.25rem 0.2rem;" id="engineCapacity">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="engineGearbox" style="margin-bottom: 0.3rem!important;">Gearbox :</label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" value="{% if data %}{{data.adminTruckNumber}} {% endif %}" {% if data %}readonly{% endif %} type="text" name="engineGearbox" style="padding: 0.25rem 0.2rem;" id="engineGearbox">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit  -->
+                        <div class="col-md-12 col-am-12 text-right">
+                            {% if not data  %}
+                            <button type='submit' class="btn btn-default px-5 mt-4">Next</button> 
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+
+
+                
+                 {% if connections %}
+                    {% for connection in connections %}
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Connections</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <div class="row">
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="clientTruckNumber{{connection.count}}">Client truck number <span class="required">*</span></label>
+                                        <div class="field item form-group">
+                                            <input class="form-control" data-validate-length-range="6,6" value="{% if connection %}{{connection.clientTruckId}}{% endif %}" {% if connection %}readonly{% endif %} type="number" name="clientTruckNumber{{count}}" required='required' style="padding: 0.25rem 0.2rem;" id="clientTruckNumber{{count}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="rate_card_name{{connection.count}}">Rate card <span class="required">*</span></label>
+                                        <select name="rate_card_name{{connection.count}}" class="form-control" id="rate_card_name{{connection.count}}" required="required" {% if connection %}disabled{% endif %}>
+                                            {% for card in rateCards%}
+                                            <option value="{{card.id}}" {% if card.id == connection.rate_card_name_id %} selected {% endif %} >{{card.rate_card_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="clientId{{connection.count}}"> Client name <span class="required">*</span></label>
+                                        <select name="clientId{{connection.count}}" class="form-control" id="clientId{{connection.count}}" required="required" {% if connection %}disabled{% endif %}>
+                                            {% for client in clientIds%}
+                                            <option value="{{client.clientId}}" {% if client.clientId == connection.clientId_id %} selected {% endif %} >{{client.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="truckType{{connection.count}}"> Truck type<span class="required" >*</span></label>
+                                        <select name="truckType{{connection.count}}" class="form-control" id="truckType{{connection.count}}" {% if connection %}disabled{% endif %}>
+                                            <option value="Embedded" {% if connection.truckType == 'Embedded' %} selected {% endif %} >Embedded</option>
+                                            <option value="Casual" {% if connection.truckType == 'Casual' %} selected {% endif %}>Casual</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="startDate{{connection.count}}"> Start date<span class="required">*</span></label>
+                                        <input class="form-control" data-validate-length-range="6,6" value="{% if connection %}{{connection.startDate}}{% endif %}" {% if connection %}readonly{% endif %} type="date" name="startDate{{connection.count}}" required='required' style="padding: 0.25rem 0.2rem;" id="startDate{{connection.count}}">
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <label for="endDate{{connection.count}}"> End date<span class="required">*</span></label>
+                                        <input class="form-control" data-validate-length-range="6,6" value="{% if connection %}{{connection.endDate}}{% endif %}" {% if connection %}readonly{% endif %} type="date" name="endDate{{connection.count}}" required='required' style="padding: 0.25rem 0.2rem;" id="endDate{{connection.count}}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %} 
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+{% endblock %}
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+<script>
+
+    var validator = new FormValidator({
+        "events": ['blur', 'input', 'change']
+    }, document.forms[0]);
+    // on form "submit" event
+    document.forms[0].onsubmit = function (e) {
+        var submit = true,
+            validatorResult = validator.checkAll(this);
+        console.log(validatorResult);
+        return !!validatorResult.valid;
+    };
+    // on form "reset" event
+    document.forms[0].onreset = function (e) {
+        validator.reset();
+    };
+    // stuff related ONLY for this demo page:
+    $('.toggleValidationTooltips').change(function () {
+        validator.settings.alerts = !this.checked;
+        if (this.checked)
+            $('form .alert').remove();
+    }).prop('checked', false);
+
+   
+
+</script>
+{% endblock %}
+
+{% block footerStyleEnd %} 
+<script type="text/javascript" src="https://cdn.rawgit.com/prashantchaudhary/ddslick/master/jquery.ddslick.min.js" ></script>
+<script>
+    $("#informationIcon").ddslick({
+        width:"100%",
+        imagePosition: "left",
+        selectText: "select Your Social Network",
+        onSelected: function(data){
+            $('input[name="informationIcon"]').val(data.selectedData.value);
+        }
+    })
+    function registered(data) {
+        var isChecked = $(data).prop("checked");
+        if(isChecked){
+            $("#registrationSection input").prop("disabled", true);
+            $("#registrationSection select").prop("disabled", true);
+        }else{
+            $("#registrationSection input").prop("disabled", false);
+            $("#registrationSection select").prop("disabled", false);
+        }
+        console.log(isChecked);
+    }
+
+</script>
+
+{% endblock %}

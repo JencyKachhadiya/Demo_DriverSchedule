@@ -1,0 +1,23 @@
+{% extends "Trip_details/main/main.html" %}
+{% load static %}
+{% block title %}Home{% endblock title %}
+{% block headStyle %} 
+<style> 
+  .image-container {
+    height: 100vh;
+    background-image: url("{% static 'Dashboard/images/Truck.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-color: #f4f4f4;
+    opacity: 0.7;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<!-- Jumbotron -->
+<div class="text-center">
+  <div class="image-container">
+  </div>
+</div>
+  <!-- Jumbotron -->
+{% endblock %}

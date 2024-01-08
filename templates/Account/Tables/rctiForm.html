@@ -1,0 +1,1082 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | RCTI entry {% endblock %}
+
+{% block headStyle %}
+<style>
+    .nav-tabs .nav-link.active {
+        background-color: #3e5164;
+        color: white;
+        border-radius: 0!important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="x_panel">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2> {% if rcti %} View RCTI {% elif docketData%} View Holcim {% else %} Add RCTI {% endif  %}:-</h2>
+                                {% if docketData is None and rcti is None %}
+                                <div class="float-right">
+                                    <form action="{% url 'Account:rctiFormSave' %}" method="post" id="rctiForm">
+                                        <select class="form-control" id="clientName" name="clientName">
+                                            {% for clientName in clientNames %}
+                                            <option value="{{ clientName.name }}">{{ clientName.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+                                </div>
+                                {%endif%}
+                                <div class="clearfix"></div>
+                            </div>
+                            </div>
+                            <form action="{% url 'Account:rctiFormSave' %}" method="post" id="boralRctiForm">
+                            {% csrf_token %}
+                                <div class="x_content"   id="boral" >
+                                    <div class="col-md-2">
+                                        <!-- for floating -->
+                                        <!-- Nav tabs -->
+                                        <div class="nav nav-tabs flex-column  bar_tabs" id="v-pills-tab" role="tablist"
+                                        aria-orientation="vertical">
+                                        
+                                            {% comment %} {% if rcti %} {% endcomment %}
+                                            <a class="nav-link active" id="v-pills-truckNo-tab" data-toggle="pill" href="#v-pills-truckNo" role="tab"
+                                                aria-controls="v-pills-truckNo" aria-selected="true">Truck No</a>
+                                            <a class="nav-link" id="v-pills-noOfKm-tab" data-toggle="pill" href="#v-pills-noOfKm"
+                                                role="tab" aria-controls="v-pills-noOfKm" aria-selected="false">No of KM</a>
+                                            <a class="nav-link" id="v-pills-transferKM-tab" data-toggle="pill" href="#v-pills-transferKM"
+                                                role="tab" aria-controls="v-pills-transferKM" aria-selected="false">Transfer KM</a>
+                                            <a class="nav-link" id="v-pills-returnKm-tab" data-toggle="pill" href="#v-pills-returnKm"
+                                                role="tab" aria-controls="v-pills-returnKm" aria-selected="false">Return KM</a>
+                                            <a class="nav-link" id="v-pills-waitingTimeSCHED-tab" data-toggle="pill" href="#v-pills-waitingTimeSCHED"
+                                                role="tab" aria-controls="v-pills-waitingTimeSCHED" aria-selected="false">Waiting time SCHED</a>
+                                            <a class="nav-link" id="v-pills-waitingTimeInMinutes-tab" data-toggle="pill" href="#v-pills-waitingTimeInMinutes"
+                                                role="tab" aria-controls="v-pills-waitingTimeInMinutes" aria-selected="false">Waiting time in minutes</a>
+                                            <a class="nav-link" id="v-pills-standByNoSlot-tab" data-toggle="pill" href="#v-pills-standByNoSlot"
+                                                role="tab" aria-controls="v-pills-standByNoSlot" aria-selected="false">Stand by per half hour cost</a>
+                                            <a class="nav-link" id="v-pills-minimumLoad-tab" data-toggle="pill" href="#v-pills-minimumLoad"
+                                                role="tab" aria-controls="v-pills-minimumLoad" aria-selected="false">Minimum load</a>
+                                            <a class="nav-link" id="v-pills-surcharge_fixed_normal-tab" data-toggle="pill" href="#v-pills-surcharge_fixed_normal"
+                                                role="tab" aria-controls="v-pills-surcharge_fixed_normal" aria-selected="false">Surcharge fixed normal</a>
+                                            <a class="nav-link" id="v-pills-others-tab" data-toggle="pill" href="#v-pills-others"
+                                                role="tab" aria-controls="v-pills-others" aria-selected="false">Others</a>
+                                            {% if rcti %}
+                                            <a class="nav-link" id="v-pills-docketView-tab" data-toggle="pill" href="#v-pills-docketView"
+                                            role="tab" aria-controls="v-pills-docketView" aria-selected="false">Full Docket view</a>
+                                            {% endif %}
+                                            {% comment %} {% endif %} {% endcomment %}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <!-- Tab panes -->
+                                        <div class="tab-content" id="v-pills-tabContent">
+                                            <div class="tab-pane fade " id="v-pills-docketView" role="tabpanel"
+                                                aria-labelledby="v-pills-docketView-tab">
+                                                {% if rcti %}
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="truckNo">Truck No:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number"  value="{{ rcti.truckNo }}" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group ">
+                                                                <label for="docketNumber">Docket Number:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number"  value="{{ rcti.docketNumber }}" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group ">
+                                                                <label for="docketDate">Docket date :<span class="required">*</span></label>
+                                                                <input class="form-control" type=date
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{rcti.docketDate}}"
+                                                                {% if rcti %} readonly {% endif  %} >
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="docketYard">Docket Yard:<span class="required">*</span></label>
+                                                                    <input class="form-control" required="required" type="text" style="padding: 0.25rem 0.2rem;" value="{{ rcti.docketYard }}" {% if rcti %} readonly {% endif  %} >
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="noOfKm" >Number of km :<span class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.noOfKm  }}"
+                                                                    {% if rcti %} readonly {% endif  %} >
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="cubicMl" >Cubic Ml :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number"
+                                                                        
+                                                                        style="padding: 0.25rem 0.2rem;" value="{{  rcti.cubicMl  }}"
+                                                                        {% if rcti %} readonly {% endif  %} >
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="cubicMiAndKmsCost" >Cubic MI and Kms cost :<span
+                                                                    class="required">*</span></label>
+                                                                    <input class="form-control" type="number"
+                                                                        
+                                                                        style="padding: 0.25rem 0.2rem;" value="{{  rcti.cubicMiAndKmsCost  }}"
+                                                                    {% if rcti %} readonly {% endif  %} >
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="destination">Destination :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="text"
+                                                                        style="padding: 0.25rem 0.2rem;" value="{{ rcti.destination  }}"
+                                                                    {% if rcti %} readonly {% endif  %} >
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="cartageGSTPayable">Cartage GST payable :<span
+                                                                    class="required">*</span></label>
+                                                                    <input class="form-control" type="number"
+                                                                        
+                                                                        style="padding: 0.25rem 0.2rem;" value="{{  rcti.cartageGSTPayable  }}"
+                                                                    {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                                <label for="cartageTotalExGST">Cartage total exclude GST :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.cartageTotalExGST  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="cartageTotal">Cartage Total :<span class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.cartageTotal  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group ">
+                                                                <label for="transferKM">Transfer KM :<span class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.transferKM  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="transferKMCost">Transfer KM cost :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.transferKMCost  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="transferKMGSTPayable">Transfer KM GST Payable :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.transferKMGSTPayable  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="transferKMTotalExGST">Transfer KM total exclude GST :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.transferKMTotalExGST  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="transferKMTotal">Transfer KM total :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.transferKMTotal  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="returnKm">Return KM :<span class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.returnKm  }}"
+                                                                    {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="returnPerKmPerCubicMeterCost">Return per KM per cubic meter cost :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                required
+                                                                    style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.returnPerKmPerCubicMeterCost  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group ">
+                                                                <label for="returnKmGSTPayable">Return KM GST payable :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.returnKmGSTPayable  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="returnKmTotalExGST">Return KM total exclude GST :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.returnKmTotalExGST  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="returnKmTotal">Return KM total :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number"
+                                                                        
+                                                                        style="padding: 0.25rem 0.2rem;" value="{{  rcti.returnKmTotal  }}"
+                                                                    {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeSCHED">Waiting time surcharge :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeSCHED  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group ">
+                                                                <label for="waitingTimeSCHEDCost">Waiting time surcharge cost :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeSCHEDCost  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeSCHEDGSTPayable">Waiting time GST payable :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeSCHEDGSTPayable  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeSCHEDTotalExGST">Waiting time surcharge total exclude GST :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeSCHEDTotalExGST  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeSCHEDTotal">Waiting time surcharge total :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeSCHEDTotal  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeInMinutes">waiting time in minutes :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeInMinutes  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeCost">Waiting time cost :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number"
+                                                                        
+                                                                        style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeCost  }}"
+                                                                    {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeGSTPayable">Waiting time GST payable :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeGSTPayable  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeTotalExGST">Waiting time total exclude GST :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeTotalExGST  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeTotal">Waiting time total :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.waitingTimeTotal  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByNoSlot">Stand by per half hour cost :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                    
+                                                                    style="padding: 0.25rem 0.2rem;" value="{{  rcti.standByNoSlot  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByPerHalfHourDuration">Stand by per half hour duration :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                     style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.standByPerHalfHourDuration  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByUnit">Stand by unit :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="text" required
+                                                                        style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.standByUnit  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group ">
+                                                                <label for="standByGSTPayable">Stand by GST payable :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" 
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.standByGSTPayable  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByTotalExGST">Stand by total exclude GST :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" 
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.standByTotalExGST  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByTotal">Stand by total :<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" required
+                                                                    style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.standByTotal  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="minimumLoad">Minimum load :<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" required
+                                                                    style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.minimumLoad  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group ">
+                                                                <label for="loadCost">Load cost :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" required
+                                                                        style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.loadCost  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="minimumLoadGSTPayable">Minimum load GST payable :<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" 
+                                                                     style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.minimumLoadGSTPayable  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="minimumLoadTotalExGST">Minimum load total exclude GST :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number" 
+                                                                     style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.minimumLoadTotalExGST  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group ">
+                                                                <label for="minimumLoadTotal">Minimum load total :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" 
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.minimumLoadTotal  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_fixed_normal">Surcharge fixed normal :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number"
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.surcharge_fixed_normal  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_fixed_sunday">Surcharge fixed sunday :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number"
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.surcharge_fixed_sunday  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_fixed_public_holiday">Surcharge fixed public holiday :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                     style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.surcharge_fixed_public_holiday  }}"
+                                                                    {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_per_cubic_meters_normal">Surcharge per cubic meters normal :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                     style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.surcharge_per_cubic_meters_normal  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_per_cubic_meters_sunday">Surcharge per cubic meters sunday :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number"
+                                                                     style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.surcharge_per_cubic_meters_sunday  }}"
+                                                                {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_per_cubic_meters_public_holiday">Surcharge per cubic meters public holiday
+                                                                    :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number"
+                                                                    required
+                                                                        style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.surcharge_per_cubic_meters_public_holiday  }}"
+                                                                    {% if rcti %} readonly {% endif  %}>
+                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_duration">Surcharge duration :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" 
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.surcharge_duration  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surchargeUnit">Surcharge unit :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="text"
+                                                                        style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.surchargeUnit  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surchargeGSTPayable">Surcharge GST payable :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" 
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.surchargeGSTPayable  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surchargeTotalExGST">Surcharge total exclude GST :<span
+                                                                    class="required">*</span></label>
+                                                                <input class="form-control" type="number" 
+                                                                     style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.surchargeTotalExGST  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surchargeTotal">Surcharge total :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" 
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.surchargeTotal  }}" {% if rcti %} readonly {% endif  %}>
+                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group ">
+                                                                <label for="others">Others :<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" required
+                                                                    style="padding: 0.25rem 0.2rem;"
+                                                                    value="{{  rcti.others  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="othersCost">Others cost :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" required
+                                                                        style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.othersCost  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="othersGSTPayable">Others GST payable :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" 
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.othersGSTPayable  }}" {% if rcti %} readonly {% endif  %}>
+                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="othersTotalExGST">Others total exclude GST :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" 
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.othersTotalExGST  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="othersTotalExGST">Others total exclude GST :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" 
+                                                                         style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.othersTotalExGST  }}" {% if rcti %} readonly {% endif  %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="othersTotal">Others total :<span class="required">*</span></label>
+                                                                    <input class="form-control" type="number" required
+                                                                        style="padding: 0.25rem 0.2rem;"
+                                                                        value="{{  rcti.othersTotal  }}" {% if rcti %} readonly {% endif  %}>
+                                                                </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="tab-pane fade show active" id="v-pills-truckNo" role="tabpanel"
+                                                aria-labelledby="v-pills-truckNo-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="truckNo">Truck No:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="truckNo"  value="{{ rcti.truckNo }}" id="truckNo" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        {% comment %} <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="truckNo"><span class="required">*</span></label>
+                                                                <select class="form-control" id="clientName" name="clientName">
+                                                                    <option value="" disabled selected>Select Client Name</option>
+                                                                    {% for clientName in clientNames %}
+                                                                    <option value="{{ clientName.name }}">{{ clientName.name }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div> {% endcomment %}
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="docketNumber">Docket number:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="docketNumber"  value="{{ rcti.docketNumber }}" id="docketNumber" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="docketDate">Docket date:<span class="required">*</span></label>
+                                                                <input class="form-control"  {% if rcti %} type="text"  {% else  %}  type="date" {% endif %} name="docketDate"  value="{{rcti.docketDate}}" id="docketDate" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="docketYard">Docket yard:<span class="required">*</span></label>
+                                                                <input class="form-control" type="text" name="docketYard"  value="{{ rcti.docketYard }}" id="docketYard" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-noOfKm" role="tabpanel"
+                                                aria-labelledby="v-pills-noOfKm-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="noOfKm">No Of KM:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="noOfKm"  value="{{ rcti.noOfKm }}" id="noOfKm" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="cubicMl">Cubic Ml:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="cubicMl"  value="{{ rcti.cubicMl }}" id="cubicMl" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="cubicMiAndKmsCost">Cubic Mi and KMs Cost:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="cubicMiAndKmsCost"  value="{{ rcti.cubicMiAndKmsCost }}" id="cubicMiAndKmsCost" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="destination">Destination:<span class="required">*</span></label>
+                                                                <input class="form-control" type="text" name="destination"  value="{{ rcti.destination }}" id="destination" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="cartageGSTPayable">Cartage GST payable:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="cartageGSTPayable"  value="{{ rcti.cartageGSTPayable }}" id="cartageGSTPayable" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="cartageTotalExGST">Cartage total Ex GST:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="cartageTotalExGST"  value="{{ rcti.cartageTotalExGST }}" id="cartageTotalExGST" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="cartageTotal">Cartage total:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="cartageTotal"  value="{{ rcti.cartageTotal }}" id="cartageTotal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-transferKM" role="tabpanel"
+                                                aria-labelledby="v-pills-transferKM-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="transferKM">Transfer KM:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="transferKM"  value="{{ rcti.transferKM }}" id="transferKM" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="transferKMCost">Transfer KM cost:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="transferKMCost"  value="{{ rcti.transferKMCost }}" id="transferKMCost" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="transferKMGSTPayable">Transfer KM GST payable:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="transferKMGSTPayable"  value="{{ rcti.transferKMGSTPayable }}" id="transferKMGSTPayable" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="transferKMTotalExGST">Transfer KM total Ex GST:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="transferKMTotalExGST"  value="{{ rcti.transferKMTotalExGST }}" id="transferKMTotalExGST" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="transferKMTotal">Transfer KM total:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="transferKMTotal"  value="{{ rcti.transferKMTotal }}" id="transferKMTotal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-returnKm" role="tabpanel"
+                                                aria-labelledby="v-pills-returnKm-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="returnKm">Return KM:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="returnKm"  value="{{ rcti.returnKm }}" id="returnKm" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="returnPerKmPerCubicMeterCost">Return per KM per cubic meter cost:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="returnPerKmPerCubicMeterCost"  value="{{ rcti.returnPerKmPerCubicMeterCost }}" id="returnPerKmPerCubicMeterCost" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="returnKmGSTPayable">Return KM GST payable:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="returnKmGSTPayable"  value="{{ rcti.returnKmGSTPayable }}" id="returnKmGSTPayable" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="returnKmTotalExGST">Return KM total Ex GST:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="returnKmTotalExGST"  value="{{ rcti.returnKmTotalExGST }}" id="returnKmTotalExGST" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="returnKmTotal">Return KM total:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="returnKmTotal"  value="{{ rcti.returnKmTotal }}" id="returnKmTotal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-waitingTimeSCHED" role="tabpanel"
+                                                aria-labelledby="v-pills-waitingTimeSCHED-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeSCHED">Waiting time SCHED:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeSCHED"  value="{{ rcti.waitingTimeSCHED }}" id="waitingTimeSCHED" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeSCHEDCost">Waiting time SCHED cost:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeSCHEDCost"  value="{{ rcti.waitingTimeSCHEDCost }}" id="waitingTimeSCHEDCost" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeSCHEDGSTPayable">Waiting time SCHED GST payable:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeSCHEDGSTPayable"  value="{{ rcti.waitingTimeSCHEDGSTPayable }}" id="waitingTimeSCHEDGSTPayable" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeSCHEDTotalExGST">Waiting time SCHED total Ex GST:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeSCHEDTotalExGST"  value="{{ rcti.waitingTimeSCHEDTotalExGST }}" id="waitingTimeSCHEDTotalExGST" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeSCHEDTotal">Waiting time SCHED total:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeSCHEDTotal"  value="{{ rcti.waitingTimeSCHEDTotal }}" id="waitingTimeSCHEDTotal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-waitingTimeInMinutes" role="tabpanel"
+                                                aria-labelledby="v-pills-waitingTimeInMinutes-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeInMinutes">Waiting time in minutes:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeInMinutes"  value="{{ rcti.waitingTimeInMinutes }}" id="waitingTimeInMinutes" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeCost">Waiting time cost:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeCost"  value="{{ rcti.waitingTimeCost }}" id="waitingTimeCost" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeGSTPayable">Waiting time GST payable:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeGSTPayable"  value="{{ rcti.waitingTimeGSTPayable }}" id="waitingTimeGSTPayable" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeTotalExGST">Waiting time total Ex GST:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeTotalExGST"  value="{{ rcti.waitingTimeTotalExGST }}" id="waitingTimeTotalExGST" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="waitingTimeTotal">Waiting time total:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="waitingTimeTotal"  value="{{ rcti.waitingTimeTotal }}" id="waitingTimeTotal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-standByNoSlot" role="tabpanel"
+                                                aria-labelledby="v-pills-standByNoSlot-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByNoSlot">Stand by per half hour cost:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="standByNoSlot"  value="{{ rcti.standByNoSlot }}" id="standByNoSlot" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByPerHalfHourDuration">Stand by per half hour duration:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="standByPerHalfHourDuration"  value="{{ rcti.standByPerHalfHourDuration }}" id="standByPerHalfHourDuration" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByUnit">Stand by unit:<span class="required">*</span></label>
+                                                                <input class="form-control" type="text" name="standByUnit"  value="{{ rcti.standByUnit }}" id="standByUnit" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByGSTPayable">Stand by GST payable:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="standByGSTPayable"  value="{{ rcti.standByGSTPayable }}" id="standByGSTPayable" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByTotalExGST">Stand by total Ex GST:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="standByTotalExGST"  value="{{ rcti.standByTotalExGST }}" id="standByTotalExGST" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="standByTotal">Stand by total:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="standByTotal"  value="{{ rcti.standByTotal }}" id="standByTotal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-minimumLoad" role="tabpanel"
+                                                aria-labelledby="v-pills-minimumLoad-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="minimumLoad">Minimum load:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="minimumLoad"  value="{{ rcti.minimumLoad }}" id="minimumLoad" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="loadCost">Load cost:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="loadCost"  value="{{ rcti.loadCost }}" id="loadCost" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="minimumLoadGSTPayable">Minimum load GST payable:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="minimumLoadGSTPayable"  value="{{ rcti.minimumLoadGSTPayable }}" id="minimumLoadGSTPayable" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="minimumLoadTotalExGST">Minimum load total Ex GST:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="minimumLoadTotalExGST"  value="{{ rcti.minimumLoadTotalExGST }}" id="minimumLoadTotalExGST" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="minimumLoadTotal">Minimum load total:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="minimumLoadTotal"  value="{{ rcti.minimumLoadTotal }}" id="minimumLoadTotal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-surcharge_fixed_normal" role="tabpanel"
+                                                aria-labelledby="v-pills-surcharge_fixed_normal-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_fixed_normal">Surcharge fixed normal:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surcharge_fixed_normal"  value="{{ rcti.surcharge_fixed_normal }}" id="surcharge_fixed_normal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_fixed_sunday">Surcharge fixed sunday:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surcharge_fixed_sunday"  value="{{ rcti.surcharge_fixed_sunday }}" id="surcharge_fixed_sunday" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_fixed_public_holiday">Surcharge fixed public holiday:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surcharge_fixed_public_holiday"  value="{{ rcti.surcharge_fixed_public_holiday }}" id="surcharge_fixed_public_holiday" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_per_cubic_meters_normal">Surcharge per cubic meters normal:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surcharge_per_cubic_meters_normal"  value="{{ rcti.surcharge_per_cubic_meters_normal }}" id="surcharge_per_cubic_meters_normal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_per_cubic_meters_sunday">Surcharge per cubic meters sunday:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surcharge_per_cubic_meters_sunday"  value="{{ rcti.surcharge_per_cubic_meters_sunday }}" id="surcharge_per_cubic_meters_sunday" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_per_cubic_meters_public_holiday">Surcharge per cubic meters public holiday:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surcharge_per_cubic_meters_public_holiday"  value="{{ rcti.surcharge_per_cubic_meters_public_holiday }}" id="surcharge_per_cubic_meters_public_holiday" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surcharge_duration">Surcharge duration:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surcharge_duration"  value="{{ rcti.surcharge_duration }}" id="surcharge_duration" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surchargeUnit">Surcharge unit:<span class="required">*</span></label>
+                                                                <input class="form-control" type="text" name="surchargeUnit"  value="{{ rcti.surchargeUnit }}" id="surchargeUnit" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surchargeGSTPayable">Surcharge GST payable:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surchargeGSTPayable"  value="{{ rcti.surchargeGSTPayable }}" id="surchargeGSTPayable" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surchargeTotalExGST">Surcharge total Ex GST:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surchargeTotalExGST"  value="{{ rcti.surchargeTotalExGST }}" id="surchargeTotalExGST" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="surchargeTotal">Surcharge total:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="surchargeTotal"  value="{{ rcti.surchargeTotal }}" id="surchargeTotal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-others" role="tabpanel" aria-labelledby="v-pills-others-tab">
+                                                <div class="x_content">
+                                                    <div class="custom-container">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="others">Others:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="others"  value="{{ rcti.others }}" id="others" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="othersCost">Others cost:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="othersCost"  value="{{ rcti.othersCost }}" id="othersCost" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="othersGSTPayable">Others GST payable:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="othersGSTPayable"  value="{{ rcti.othersGSTPayable }}" id="othersGSTPayable" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="othersTotalExGST">Others total Ex GST:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="othersTotalExGST"  value="{{ rcti.othersTotalExGST }}" id="othersTotalExGST" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="othersTotal">Others total:<span class="required">*</span></label>
+                                                                <input class="form-control" type="number" name="othersTotal"  value="{{ rcti.othersTotal }}" id="othersTotal" {% if rcti %} readonly {% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <input class="btn btn-default float-right above " id="boralSub" type="submit" value="submit" >
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock %}
+{% block footerStyleEnd %}
+
+<script>
+    $(document).ready(function(){
+        // Select the dropdown by its ID
+       
+      
+
+        $("#boralRctiForm").submit(function(e){
+            e.preventDefault(); 
+            let isValid = true;
+            let valOfField = null
+            $('#boralRctiForm input, #myForm select').each(function() {
+                if ($.trim($(this).val()) === '') {
+                    isValid = false;
+                    valOfField = $(this).attr('name');
+                    return false; // Exit the loop if a blank field is found
+                }
+            });
+            if (!isValid) {
+                e.preventDefault(); // Prevent form submission if fields are blank
+                alert(`Please fill up ${valOfField}.`)
+            }
+        });
+    });
+</script>
+{% endblock %}
+

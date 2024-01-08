@@ -1,0 +1,43 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Groups Form {% endblock %}
+{% block content %}
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2></h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="cuatom-continer">
+                            <form class="" action="" method="POST" novalidate>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="groups"
+                                            class="col-form-label col-md-3 col-sm-3 label-align">Groups :<span
+                                                class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <input class="form-control" name="groups" required="required"
+                                                id="groups" type="text" value=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-9 col-sm-9 text-right">
+                                        <button type='reset' class="btn btn-success px-4 ">Reset</button>
+                                        <button type='submit' class="btn btn-primary px-4">Submit</button>
+                                    </div>
+                                </div>
+                            </form> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "main/main.html" %} {% load static %} {% block title %} |
+{{dataType}} docket {% endblock %} {% block headStyle %}
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link type="text/css"
+    href="https://gyrocode.github.io/jquery-datatables-checkboxes/1.2.12/css/dataTables.checkboxes.css"
+    rel="stylesheet" />
+<style>
+    .dt-buttons.btn-group {
+        float: right !important;
+    }
+
+    /* Hide all buttons (copy,csv,excel,pdf,print) */
+    .dt-buttons.btn-group>a {
+        display: none !important;
+    }
+
+    /* Show CSV button 
+  .dt-buttons.btn-group > a:nth-child(2) {
+      display: block !important;
+    }
+        */
+</style>
+{% endblock %} {% block content %}
+<div class="right_col">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel" style="max-height: 120vh; overflow-y: auto;">
+                    <div class="x_title">
+                        <h2>{{dataType}} result</h2>
+                        {% if dataType == 'Reconciliation' %}
+                        <div class="float-right">
+                            <button class="btn btn-sm btn-default submit" value="Mark as complete">Mark as
+                                complete</button>
+                            </div>
+                        {% endif %}
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card-box table-responsive">
+                                    <table id="dataTable" class="table table-striped table-bordered">
+                                        <thead>
+                                            <th></th>
+                                            <th>Docket number</th>
+                                            <th>Load & Km cost</th>
+                                            <th>Surcharge </th>
+                                            <th>Waiting cost</th> 
+                                            <th>Stand by cost</th>
+                                            <th>Total cost</th>
+                                            <th style="width:17%">Missing components</th>
+                                            <th>Action</th>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Driver / RCTI -->
+                                            {% for item in dataList %}
+                                                <tr>
+                                                    <td>{{ item.docketNumber }}</td>
+                                                    <td>
+                                                        <a href="{% url 'Account:reconciliationDocketView' docketNumber=item.docketNumber %}" target="_blank" 
+                                                            class="{% if item.fromDriver and item.fromRcti %} text-success {% else %} text-danger {% endif %}">{{ item.docketNumber }}
+                                                        </a>
+                                                    </td>
+                                                    <td class="{% if item.driverLoadAndKmCost == item.rctiLoadAndKmCost %} text-success{% else %} text-danger {%endif%}">{{ item.driverLoadAndKmCost}} / {{ item.rctiLoadAndKmCost }} </td>
+                                                    <td class="{% if item.driverSurchargeCost == item.rctiSurchargeCost %} text-success{% else %} text-danger {%endif%}">{{ item.driverSurchargeCost}} / {{ item.rctiSurchargeCost }} </td>
+                                                    <td class="{% if item.driverWaitingTimeCost == item.rctiWaitingTimeCost %} text-success{% else %} text-danger {%endif%}">{{ item.driverWaitingTimeCost}} / {{ item.rctiWaitingTimeCost }} </td>
+                                                    <td class="{% if item.driverStandByCost == item.rctiStandByCost %} text-success{% else %} text-danger {%endif%}">{{ item.driverStandByCost}} / {{ item.rctiStandByCost }} </td>
+                                                    <td class="{% if item.driverTotalCost == item.rctiTotalCost %} text-success{% else %} text-danger {%endif%}">{{ item.driverTotalCost}} / {{ item.rctiTotalCost }} </td>
+                                                    <td class="text-danger">{{ item.missingComponent }} </td>
+                                                    
+                                                    {% comment %} <td><a href="{% if item.escalationStep == 2 %} {% url 'Account:reconciliationEscalationForm2' id=item.id %} {% elif item.escalationStep == 3 %} {% url 'Account:reconciliationEscalationForm3' id=item.id %} {% elif item.escalationStep == 4 %} {% url 'Account:reconciliationEscalationForm4' id=item.id %} {% else %} {% url 'Account:reconciliationEscalationForm' id=item.id %} {% endif %}" class="btn btn-sm btn-default">Escalation</a></td> {% endcomment %}
+                                                    <td><a href="{% url 'Account:reconciliationEscalationForm' id=item.id %}" class="btn btn-sm btn-default" target="_blank">Escalation</a></td>
+
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
+{% block footerStyleEnd %}
+
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+    const csrftoken = $("[name=csrfmiddlewaretoken]").val();
+    $(document).ready(function () {
+
+        var table = $("#dataTable").DataTable({
+            'columnDefs': [{
+                'targets': 0,
+                'checkboxes': {
+                    'selectRow': true
+                }
+            }]
+        });
+        $('.submit').on('click', function () {
+            var selectedRows = table.column(0).checkboxes.selected();
+        
+            var rowDockets = [];
+            $.each(selectedRows, function(key,docket){
+                rowDockets.push(docket)
+            })
+            console.log(rowDockets)
+        
+            if(rowDockets.length > 0){ // Check if any rows are selected
+                $.ajax({
+                    type: "POST",
+                    url: "/account/reconciliation/setMark/",
+                    data: {
+                        dockets: rowDockets,
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
+                    success: function (data) {
+                        window.location.reload();
+                        alert('Selected Dockets Marked As Completed Successfully.');
+                    }
+
+                });
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript"
+    src="https://gyrocode.github.io/jquery-datatables-checkboxes/1.2.12/js/dataTables.checkboxes.min.js"></script>
+
+{% endblock %}

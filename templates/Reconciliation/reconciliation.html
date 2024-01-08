@@ -1,0 +1,164 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Reconciliation {% endblock %}
+{% block headStyle %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}" />
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<style>
+    .cuatom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(255, 0, 0) !important;
+        border-radius: 7px !important;
+    }
+
+    @media (max-width: 576px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    .well {
+        padding: 0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>{{dataType}}</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <form action="{% url 'Account:reconciliationAnalysis' dataType=dataTypeInt %}" method="POST" novalidate id="reconciliationForm">
+                            {% csrf_token %}
+                            <div class="col-md-6 col-sm-6">
+                                <label for="startDate">Start Date:<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control date" type="date" name="startDate" id="startDate"
+                                        required="required">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <label for="endDate">End Date:<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control date" readonly type="date" name="endDate" id="endDate"
+                                        required="required" >
+                                </div>
+                            </div>
+                            <div class="ol-md-4 col-sm-4">
+                                <label for="driverId">Driver id :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <select class="form-control"  id="driverId" name="driverId">
+                                        <option value="" disabled selected>Select DriverId</option>
+                                        {% for driver in drivers %}
+                                        <option value="{{ driver.driverId }}">{{ driver.driverId }} - {{ driver.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="clientId">Client Name :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <select class="form-control"  id="clientName" name="clientName">
+                                        <option value="" disabled selected>Select Client Name</option>
+                                        {% for client in clients %}
+                                        <option value="{{ client.clientId }}">{{ client.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="truckNo">Truck No :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <select class="form-control"  id="truckNo" name="truckNo">
+                                        <option value="" disabled selected>Select Truck No</option>
+                                        {% for truck in trucks %}
+                                        <option value="{{ truck.adminTruckNumber }}">{{ truck.adminTruckNumber }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 text-right">
+                                <button type='reset' class="btn btn-success px-4">Reset</button>
+                                <button type='submit' class="btn btn-primary px-4">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+{% endblock %}
+
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+
+<script src="{% static 'js/reconciliation_analysis.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+    integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+    var validator = new FormValidator({
+        "events": ['blur', 'input', 'change']
+    }, document.forms[0]);
+    // on form "submit" event
+    document.forms[0].onsubmit = function (e) {
+
+        var submit = true,
+            validatorResult = validator.checkAll(this);
+        console.log(validatorResult);
+
+        return !!validatorResult.valid;
+    };
+    // on form "reset" event
+    document.forms[0].onreset = function (e) {
+        validator.reset();
+    };
+    // stuff related ONLY for this demo page:
+    $('.toggleValidationTooltips').change(function () {
+        validator.settings.alerts = !this.checked;
+        if (this.checked)
+            $('form .alert').remove();
+    }).prop('checked', false);
+    
+
+</script>
+
+{% endblock %}
+
+

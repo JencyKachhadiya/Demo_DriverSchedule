@@ -1,0 +1,111 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Escalation form {% endblock %}
+
+{% block content %}
+<div class="right_col">
+    <div class="clearfix"></div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Escalation form</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <!-- Smart Wizard -->
+                    <div id="wizard" class="form_wizard wizard_horizontal">
+                        <ul class="wizard_steps anchor p-0">
+                            <li>
+                                <a href="javascript:void(0)" class="selected" isdone="1" rel="1">
+                                    <span class="step_no">1</span>
+                                    <span class="step_descr">
+                                        <br>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)" class="disabled" isdone="0" rel="2">
+                                    <span class="step_no">2</span>
+                                    <span class="step_descr">
+                                        <br>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)" class="disabled" isdone="0" rel="3">
+                                    <span class="step_no">3</span>
+                                    <span class="step_descr">
+                                        <br>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)" class="disabled" isdone="0" rel="4">
+                                    <span class="step_no">4</span>
+                                    <span class="step_descr">
+                                        <br>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        {% comment %} <form  action = "{% url 'Account:reconciliationEscalationForm2' id=id %}" method="POST" class="form-horizontal form-label-left"> {% endcomment %}
+                        <form  action = "{% url 'Account:reconciliationEscalationForm2' id=escalationObj.id %}" method="POST" class="form-horizontal form-label-left">
+                            {% csrf_token%}
+
+                            <div class="form-group row">
+                                <label class="col-form-label col-md-3 col-sm-3 label-align"
+                                    for="first-name">Docket number <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6 col-sm-6 ">
+                                    <input type="number" id="docketNumber" name="docketNumber"
+                                        required="required" class="form-control" value={{escalationObj.docketNumber}}
+                                        readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-form-label col-md-3 col-sm-3 label-align"
+                                    for="last-name">Docket date <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6 col-sm-6 ">
+                                    <input type="date" id="docketDate" name="docketDate" required="required"
+                                        class="form-control " readonly value="{{docketObj.docketDate}}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="clientName"
+                                    class="col-form-label col-md-3 col-sm-3 label-align">Client name</label>
+                                <div class="col-md-6 col-sm-6 ">
+                                    <input id="clientName" class="form-control col" type="text"
+                                        name="clientName" readonly value="{{escalationObj.clientName}}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-form-label col-md-3 col-sm-3 label-align">Docket
+                                    image:</label>
+                                <div class="col-md-6 col-sm-6">
+                                    {% if docketObj.docketFile %}
+                                    <a href="/{{docketObj.docketFile}}" class="d-inline-block mt-2 text-primary" target="_blanck">Docket image here</a>
+                                    {% else %}
+                                    <p>Docket image not uploaded.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+
+                            <div class="float-right">
+                                <button type="reset" class="buttonPrevious btn btn-primary">Reset</button>
+                                <button type="submit" class="buttonNext btn btn-success">Next</button>
+                            </div>
+                        </form>
+
+                        <!-- End SmartWizard Content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

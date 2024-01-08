@@ -1,0 +1,268 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | {% if not data %}Add Job {% else %} View Job{% endif %} {% endblock %}
+
+{% block headStyle %}
+<style>
+    .isInvalid{
+        border: 1px solid #CE5454;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="clearfix"></div>
+    <form action="{% if not data %}{% url "Appointment:appointmentFormSave" %}{% else %}{% url "Appointment:appointmentFormUpdateSave" id=data.id %}{% endif %}" method="POST" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-9 col-sm-9">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>{% if not data %}Add Job {% else %} View Job{% endif %}</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="custom-continer">
+                            <!-- <div class="col-md-4 col-sm-4">
+                                <label for="status">Status :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <select name="status" class="form-select form-control" id="status" required {% if data %}disabled{% endif %}>
+                                        <option disabled selected> Select status </option>
+                                        <option value="unassigned" {% if data.Status == "unassigned" %}selected{% endif %}>unassigned</option>
+                                        <option value="assigned" {% if data.Status == "assigned" %}selected{% endif %}>assigned</option>
+                                        <option value="dispacted" {% if data.Status == "dispacted" %}selected{% endif %}>dispacted</option>
+                                        <option value="in_progress" {% if data.Status == "in_progress" %}selected{% endif %}>in_progress</option>
+                                        <option value="incomplete" {% if data.Status == "incomplete" %}selected{% endif %}>incomplete</option>
+                                        <option value="complete" {% if data.Status == "complete" %}selected{% endif %}>complete</option>
+                                        <option value="cancelled" {% if data.Status == "cancelled" %}selected{% endif %}>cancelled</option>
+                                    </select>
+                                </div>
+                            </div> -->
+                            <div class="col-md-4 col-sm-4">
+                                <label for="title">Title :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Title }}{% endif %}" type="text" name="title" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="title">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="origin">Origin :<span class="required">*</span></label>
+                                {% if not data %}
+                                
+                                <span class="float-right">
+                                    <span class="text-primary font-weight-bold" style="cursor: pointer;" onclick="checkOrigin()">Check</span>
+                                </span>
+                                {% endif %}
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Origin }}{% endif %}" type="text" name="origin" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="origin">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="createdBy">Created by :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Created_by }}{% else %}{{currentUser}}{% endif %}" type="text" name="createdBy" readonly
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="createdBy">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="startDateTime">Start date time :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Start_Date_Time }}{% endif %}" type="datetime-local" name="startDateTime" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="startDateTime" onchange="setEndDateTime(this)">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="endDateTime">End date time :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.End_Date_Time }}{% endif %}" type="datetime-local" name="endDateTime" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="endDateTime" readonly onchange="setTruckAndDriver(this)">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="reportToOrigin">Report to origin :<span
+                                        class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.report_to_origin }}{% endif %}" type="datetime-local" name="reportToOrigin" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="reportToOrigin">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 col-sm-4">
+                                <label for="recurring">Recurring :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Recurring }}{% endif %}" type="text" name="recurring" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="recurring">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="staffNotes">Staff notes :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Staff_Notes }}{% endif %}" type="text" name="staffNotes" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="staffNotes">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="shiftType">Shift type :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <select name="shiftType" class="form-select form-control" id="shiftType" required {% if data %}disabled{% endif %}>
+                                        <option disabled selected> Select shift type </option>
+                                        <option value="Day" {% if data.shiftType == "Day" %}selected{% endif %}>Day</option>
+                                        <option value="Night" {% if data.shiftType == "Night" %}selected{% endif %}>Night</option>
+                                        </select>
+                                </div>
+                            </div>
+                            <!-- <div class="col-md-4 col-sm-4">
+                                <label for="reportTime">Report time :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Report_Time }}{% endif %}" type="time" name="reportTime" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="reportTime">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="dwellTime">Dwell time :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Dwell_Time }}{% endif %}" type="time" name="dwellTime" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="dwellTime">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="blockTime">Block time :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Block_Time }}{% endif %}" type="time" name="blockTime" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="blockTime">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="totalTime">Total time :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control" value="{% if data %}{{ data.Total_Time }}{% endif %}" type="time" name="totalTime" {% if data %}readonly{% endif %}
+                                        required='required' style="padding: 0.25rem 0.2rem;" id="totalTime">
+                                </div>
+                            </div> -->
+                            <div class="col-md-4 col-sm-4">
+                                <label for="stopName">Client name :<span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <select name="stopName" required class="form-select form-control" id="stopName"  {% if data %}disabled{% endif %} >
+                                        {% for client in clients %}
+                                        <option value="{{client.clientId}}" {% if data.stop.clientId == client.clientId %}selected{% endif %}>{{client.clientId}}-{{client.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="driverName">Driver name :<span class="required">*</span></label>
+                                <b class="text-danger">{{appointmentDriver.driverName.name}}</b>
+                                <span class="float-right">
+                                    <input type="checkbox" name="addDriver" id="addDriver" style="cursor: pointer;" disabled onchange="openBox(this,'driverName')" {% if appointmentDriver %}checked{% endif %}>
+                                </span>
+                               
+                                <div class="field item form-group">
+                                    <select name="driverName" class="form-select form-control" id="driverName" required {% if not data or data.Status == 'Complete' %}disabled{% endif %}>
+                                        <option value="" disabled selected> Select driver </option>
+                                        {% if data %}
+                                            {% for driver in availableDriversList %}
+                                            
+                                            <option value="{{driver.driverId}}" {% if appointmentDriver.driverName.driverId == driver.driverId%}selected{% endif %}>{{driver.driverId}}-{{driver.name}}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="truckNo">Truck No :<span class="required">*</span></label>
+                                <b class="text-danger"> {{appointmentTruck}}</b>
+
+                                <span class="float-right">
+                                    <input type="checkbox" name="addTruck" id="addTruck" style="cursor: pointer;" disabled onchange="openBox(this,'truckNo')" {% if appointmentTruck %}checked{% endif %}>
+                                </span>
+                                <div class="field item form-group">
+                                    <select name="truckNo" class="form-select form-control" id="truckNo" required {% if not data or data.Status == 'Complete' %}disabled{% endif %}>
+                                        <option value="" disabled selected> Select Truck </option>
+                                        {% if data %}
+                                            {% for truck in availableTrucksList %}
+                                            <option value="{{truck.adminTruckNumber}}">{{truck.adminTruckNumber}}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Origin detail</h2> 
+                        <div class="float-right d-none" id="locationDiv">
+                            <input type="checkbox" id="typeLocation" value="typeLocation" name="basePlantType"style="margin-top: .5rem;" {% if basePlant.basePlantType is False %} checked {% endif %}>
+                            <label for="typeLocation">Location</label>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="text-danger text-right d-none " id="errorMsgForOrigin" style="font-size:0.7rem;" >Origin not found, Please add origin</div>
+                        <input type="hidden" id="originAddVal" name="originAddVal">
+                    </div>
+                    <div class="row">
+                        
+                        <div class="col-md-12">
+                            <label for="originAddress">Address : <span class="required">*</span></label>
+                            <div class="field item form-group">
+                                <input class="form-control" type="text" name="originAddress" readonly
+                                   required style="padding: 0.25rem 0.2rem;" id="originAddress"  value="{% if data %}{{ data.Origin.address }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="originPhone">Phone :<span class="required">*</span></label>
+                            <div class="field item form-group">
+                                <input class="form-control" type="number" name="originPhone" readonly
+                                   required style="padding: 0.25rem 0.2rem;" id="originPhone" value="{% if data %}{{ data.Origin.phone }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="originPersonOnName">Person Name :<span class="required">*</span></label>
+                            <div class="field item form-group">
+                                <input class="form-control" type="text" name="originPersonOnName" readonly
+                                   required style="padding: 0.25rem 0.2rem;" id="originPersonOnName" value="{% if data %}{{ data.Origin.personOnName }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="originLatitude">Latitude: <span class="required">*</span></label>
+                            <div class="field item form-group">
+                                <input class="form-control" type="number" name="originLatitude" readonly
+                                   required style="padding: 0.25rem 0.2rem;" id="originLatitude" value="{% if data %}{{ data.Origin.lat }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="originLongitude">Longitude: <span class="required">*</span></label>
+                            <div class="field item form-group">
+                                <input class="form-control" type="number" name="originLongitude" readonly
+                                   required style="padding: 0.25rem 0.2rem;" id="originLongitude" value="{% if data %}{{ data.Origin.long }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            {% if not data or update == 1 %}
+                <div class="col-md-12 text-right p-0">
+                    <button type='reset' style="margin: 0px;" class="btn btn-outline-dark px-4">Reset</button>
+                    <button type='submit' style="margin: 0px;" class="btn btn-default px-4">Save</button>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+<!-- /page content -->
+{% endblock %}
+
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+
+<script src="{% static 'js/addAppointment.js' %}"></script>
+
+{% endblock %}

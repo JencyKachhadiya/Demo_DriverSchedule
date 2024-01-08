@@ -1,0 +1,77 @@
+{% extends "Trip_details/main/main.html" %}
+{% load static %}
+{% block title %}Time of request{% endblock title %}
+
+{% block headStyle %}
+<style>
+    .form-group{
+        margin: .5rem 0;
+    }
+    .card {
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        background-color: #fff;
+        border: none;
+    }
+
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form action="{% url 'Account:timeOfStartSave' %}" method="post" id="checklistForm" class="card p-4">
+                {% csrf_token %}
+                <div>
+                    <h4 class="card-title text-uppercase text-default fw-bold">Pre-start Form</h4>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label class="fw-bold">1. Are you fit for work?</label><br>
+                    <label class="mr-3"><input type="radio" name="fitForWork" value="Yes" required> Yes</label>
+                    <label><input type="radio" name="fitForWork" value="No" required> No</label>
+                </div>
+                <div class="form-group">
+                    <label class="fw-bold">2. Is your vehicle all right?</label><br>
+                    <label class="mr-3"><input type="radio" name="vehicleStatus" value="Yes" required> Yes</label>
+                    <label><input type="radio" name="vehicleStatus" value="No" required> No</label>
+                </div>
+                <div class="form-group">
+                    <label class="fw-bold">3. Are all the papers of the vehicle ready?</label><br>
+                    <label class="mr-3"><input type="radio" name="papersReady" value="Yes" required> Yes</label>
+                    <label><input type="radio" name="papersReady" value="No" required> No</label>
+                </div>
+                <div class="form-group">
+                    <label for="comment" class="fw-bold">4. Comment</label>
+                    <textarea class="form-control" id="comment" name="comment"></textarea>
+                </div>
+                <div class="row mt-2">
+                    <div class="w-auto ms-auto">
+                        <input type="submit" class="btn btn-sm btn-default px-5 float-end" value="Submit">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block footerStyleEnd %}
+<script>
+    $(document).ready(function () {
+        $('#checklistForm').submit(function (event) {
+
+            var fitForWork = $('input[name="fitForWork"]:checked').val();
+            var vehicleStatus = $('input[name="vehicleStatus"]:checked').val();
+            var papersReady = $('input[name="papersReady"]:checked').val();
+
+            var comment = $('#comment').val();
+
+            if ((fitForWork === 'No' || vehicleStatus === 'No' || papersReady === 'No') && comment.trim() === '') {
+                $("#comment").css('border','1px solid red')
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

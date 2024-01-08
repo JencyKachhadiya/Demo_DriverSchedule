@@ -1,0 +1,116 @@
+{% extends "main/main.html" %} {% load static %} {% block title %} | Edit leave
+request {% endblock %} {% block headStyle %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+{% endblock %} {% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>{% if data %}Edit{% else %}Add{% endif %} Public holiday </h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="cuatom-continer">
+                            <form
+                                action="{% if data %}{% url 'Account:publicHolidayEditSave' id=data.id %}{% else %}{% url 'Account:publicHolidaySave' %}{% endif %}"
+                                method="POST" novalidate>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="state"
+                                            class="col-form-label col-md-3 col-sm-3 label-align">State :<span
+                                                class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <input class="form-control" name="state" required="required"
+                                                id="state" type="text" value="{{ data.stateName }}" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="date"
+                                            class="col-form-label col-md-3 col-sm-3 label-align">Date :<span
+                                                class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <input class="form-control" name="date" required="required"
+                                                id="date" type="date"
+                                                value="{% if data %}{{data.date}}{% else %}' '{% endif %}" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="description"
+                                            class="col-form-label col-md-3 col-sm-3 label-align">Description :<span
+                                                class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <input class="form-control" name="description" required="required"
+                                                id="text" type="description"
+                                                value="{% if data %}{{data.description}}{% else %}{% endif %}" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-9 col-sm-9 text-right">
+                                        <button type="reset" class="btn btn-success px-4">
+                                            Reset
+                                        </button>
+                                        <button type="submit" class="btn btn-primary px-4">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+    integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    // initialize a validator instance from the "FormValidator" constructor.
+    // A "<form>" element is optionally passed as an argument, but is not a must
+    var validator = new FormValidator(
+        {
+            events: ["blur", "input", "change"],
+        },
+        document.forms[0]
+    );
+    // on form "submit" event
+    document.forms[0].onsubmit = function (e) {
+        var submit = true,
+            validatorResult = validator.checkAll(this);
+        console.log(validatorResult);
+        return !!validatorResult.valid;
+    };
+    // on form "reset" event
+    document.forms[0].onreset = function (e) {
+        validator.reset();
+    };
+    // stuff related ONLY for this demo page:
+    $(".toggleValidationTooltips")
+        .change(function () {
+            validator.settings.alerts = !this.checked;
+            if (this.checked) $("form .alert").remove();
+        })
+        .prop("checked", false);
+</script>
+{% endblock %} {% endblock %}

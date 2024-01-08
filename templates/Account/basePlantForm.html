@@ -1,0 +1,171 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Edit Deports {% endblock %}
+{% block headStyle %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}" />
+<style>
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+</style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<style>
+    .cuatom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(255, 0, 0) !important;
+        border-radius: 7px !important;
+    }
+
+    @media (max-width: 576px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="clearfix"></div>
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <form class="" action="{% if basePlant %} {% url 'Account:basePlantEditSave' id=basePlant.id %} {% else %} {% url 'Account:basePlantAddSave' %} {% endif %}" method="POST">
+                {% csrf_token %}
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>{% if basePlant %}Edit{% else %}Add{% endif %} Depot / Location</h2>
+                    <div class="float-right">
+                        <input type="radio" checked id="typeDepot"value="typeDepot" name="basePlantType" style="margin-top: .8rem;">
+                        <label for="typeDepot" class=" ml-2"style="margin-right: 1rem;">Depot</label>
+                        <input type="radio" id="typeLocation" value="typeLocation" name="basePlantType"style="margin-top: .8rem;" {% if basePlant %} {% if basePlant.basePlantType is False %} checked {% endif %}{% endif %}>
+                        <label for="typeLocation" class="ml-2"style="margin-right: 1rem;">Location</label>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="cuatom-continer">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="basePlant">Name:<span class="required">*</span></label>
+                                    <input class="form-control" type="text" name="basePlant" required  value="{% if basePlant %}{{ basePlant.basePlant }}{% endif %}" id="city">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="address">Address:<span class="required">*</span></label>
+                                    <input class="form-control" type="text" name="address" required  value="{% if basePlant %}{{ basePlant.address }}{% endif %}" id="address">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="phone">Phone:<span class="required">*</span></label>
+                                    <input class="form-control" type="number" name="phone" required  value="{% if basePlant %}{{ basePlant.phone }}{% endif %}" id="phone">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="personOnName">Person Name:<span class="required">*</span></label>
+                                    <input class="form-control" type="text" name="personOnName" required  value="{% if basePlant %}{{ basePlant.personOnName }}{% endif %}" id="personOnName">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="managerName">Manager Name:<span class="required">*</span></label>
+                                    <input class="form-control" type="text" name="managerName" required  value="{% if basePlant %}{{ basePlant.managerName }}{% endif %}" id="managerName">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="lat">Latitude:<span class="required">*</span></label>
+                                    <input class="form-control" type="number" name="lat" required  value="{% if basePlant %}{{ basePlant.lat }}{% endif %}" id="latitude">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="long">Longitude:<span class="required">*</span></label> <a href="#" class="text-danger" onclick="showMap()"> Map</a>
+                                    <input class="form-control" type="number" name="long" required  value="{% if basePlant %}{{ basePlant.long }}{% endif %}" id="longitude">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9 col-sm-9 text-right">
+                                <button type='submit' class="btn btn-primary px-4">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="x_panel">
+                    <h2>Map</h2>
+                    <div class="x_title">
+                    </div>
+                    <div class="x_content">
+                        <div class="cuatom-continer">
+                            <div class="row">
+                                <div id="map"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+    integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    function showMap() {
+        // Get values from the form
+        var cityName = document.getElementById('city').value;
+        var latitude = parseFloat(document.getElementById('latitude').value);
+        var longitude = parseFloat(document.getElementById('longitude').value);
+
+        // Create a LatLng object
+        var cityLatLng = new google.maps.LatLng(latitude, longitude);
+
+        // Create a map centered at the specified coordinates
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: cityLatLng,
+            zoom: 12
+        });
+
+        // Create a marker for the city
+        var marker = new google.maps.Marker({
+            position: cityLatLng,
+            map: map,
+            title: cityName
+        });
+    }
+</script>
+{% endblock %}
+{% endblock %}

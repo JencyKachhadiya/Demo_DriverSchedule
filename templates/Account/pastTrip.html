@@ -1,0 +1,407 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Past Trip {% endblock %}
+{% block headStyle %}
+
+<!-- Datatables -->
+<link href="{% static 'Dashboard/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'Dashboard/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'Dashboard/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}"
+    rel="stylesheet">
+<link href="{% static 'Dashboard/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}"
+    rel="stylesheet">
+<link href="{% static 'Dashboard/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}"
+    rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'css/form.css' %}" />
+<style>
+    .cuatom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(255, 0, 0) !important;
+        border-radius: 7px !important;
+    }
+
+    @media (max-width: 576px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    .dt-buttons.btn-group {
+        float: right ! important;
+    }
+
+    /* Hide all buttons (copy,csv,excel,pdf,print) */
+    .dt-buttons.btn-group>a {
+        display: none !important;
+    }
+    table button{
+        border:0!important;
+        background-color: transparent;
+    }
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Past trip</h2>
+                        {% comment %} <a href="/static/subprocessFiles/errorFromPastTrip.txt" class="btn float-right"
+                            target="_blanck">
+                            <i class="fa fa-download"></i>
+                            Get errors
+                        </a> {% endcomment %}
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="cuatom-continer">
+                            <form method="POST" action="{% url 'Account:pastTripSave'%}" enctype="multipart/form-data">
+                                {% csrf_token %}
+
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="pastTripFile">Upload past trip Csv:<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="file" name="pastTripFile" required
+                                            style="padding: 0.25rem 0.2rem;" id="pastTripFile" accept=".csv">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="monthAndYear">Month & Year:<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" type="month" name="monthAndYear" required
+                                            style="padding: 0.25rem 0.2rem;" id="monthAndYear" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" required {% if pastTripErrors %}data-toggle="modal" data-target="#warningModal" {%endif%} name="save" style="margin-top: 2.5rem;" id="save_" value="1"> Save Data In Database
+                                    </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 text-right">
+                                    <button type='submit' class="btn btn-default w-25 mt-4">Submit</button>
+                                </div>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="warningModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="warningModalTitle">Modal title</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <div class="modal-body">
+                                        There are still unresolved errors. Do you want to continue?
+                                        </div>
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" id="no" data-dismiss="modal">No</button>
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!-- Errors -->
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2><i class="fa fa-bars"></i> Past Trip <small>Errors</small></h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </li>
+
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+
+
+                    <div class="x_content">
+
+                        <ul class="nav nav-tabs bar_tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home"
+                                    role="tab" aria-controls="home" aria-selected="true">Error</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile"
+                                    role="tab" aria-controls="profile" aria-selected="false">Solved</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel"
+                                aria-labelledby="home-tab">
+                                <!-- Error Table  -->
+
+
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2>Error</h2>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content" style="max-height: 120vh; overflow-y: auto;">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="card-box table-responsive">
+                                                    <table id="datatable-buttons"
+                                                        class="table table-striped table-bordered"
+                                                        style="width:100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Id</th>
+                                                                <th>Docket Date</th>
+                                                                <th>Truck No</th>
+                                                                <th>Line number</th>
+                                                                <th>Docket Number</th>
+                                                                <th>Error Description</th>
+                                                                <th>File name</th>
+                                                                <th style="width:12%">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for error in pastTripErrors %}
+                                                            <tr>
+                                                                <td><button type="button" onclick="showModel(this)" id="{{error.id}}"><i class="fa-solid fa-eye"></i></button></td>
+                                                                <td>{{ error.tripDate }}</td>
+                                                                <td>{{ error.truckNo }}</td>
+                                                                <td>{{ error.lineNumber }}</td>
+                                                                <td>{{ error.docketNumber }}</td>
+                                                                <td>{{ error.errorFromPastTrip }}</td>
+                                                                <td>{{ error.fileName }}</td>
+                                                                <td>
+                                                                    {% if 'Driver matching query does not exist' in error.errorFromPastTrip %}
+                                                                    <a href="{% url 'gearBox:driverFormAdd' %}" title="solved" class="btn btn-sm btn-primary">  Add driver  </a>
+                                                                    {% comment %} <a href="{% url 'Account:pastTripErrorSolve' id=error.id %}" title="solved" class="btn btn-sm btn-success">  Add docket  </a> {% endcomment %}
+                                                                    {% elif not error.docketNumber|default:''|lower == 'nan' or error.tripDate|default:''|lower == 'nan' %}
+                                                                    <a href="{% url 'Account:pastTripErrorSolve' id=error.id %}" title="solved" class="btn btn-sm btn-success">  Resolve  </a>
+                                                                    {% endif %}
+                                                                
+                                                                </td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                        
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- End Error Table  -->
+                            </div>
+                            
+
+                            <div class="tab-pane fade" id="profile" role="tabpanel"
+                                aria-labelledby="profile-tab">
+                                <!-- Solve Table  -->
+
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2>Solved</h2>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content" style="max-height: 120vh; overflow-y: auto;">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="card-box table-responsive">
+                                                    <table id="solved-datatable-buttons"
+                                                        class="table table-striped table-bordered"
+                                                        style="width:100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Id</th>
+                                                                <th>Status</th>
+                                                                <th>Docket Date</th>
+                                                                <th>Line number</th>
+                                                                <th>Docket Number</th>
+                                                                <th>Error Description</th>
+                                                                <th>File name</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for solve in pastTripSolved %}
+                                                            <tr>
+                                                                <td><button type="button" onclick="showModel(this)" id="{{solve.id}}"><i class="fa-solid fa-eye"></i></button></td>
+                                                                <td><i class="fa fa-check text-success "></td>
+                                                                <td>{{ solve.tripDate }}</td>
+                                                                <td>{{ solve.lineNumber }}</td>
+                                                                <td>{{ solve.docketNumber }}</td>
+                                                                <td>{{ solve.errorFromPastTrip }}</td>
+                                                                <td>{{ solve.fileName }}</td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Solve Table  -->
+                            </div>
+                                {% comment %} View error Model start {% endcomment %}
+                                <div class="modal fade" id="errorModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                        
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Error details</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                        
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="row mt-2">
+                                                    <div class="col-md-12">
+                                                        <ul>
+                                                            <li class="mt-1">
+                                                                <b>Trip Date:-</b>
+                                                                <span class="d-inline-block" id="tripDate"></span>
+                                                            </li>
+                                                            <li class="mt-1">
+                                                                <b>Truck Number:-</b>
+                                                                <span class="d-inline-block" id="truckNo"></span>
+                                                            </li>
+                                                            <li class="mt-1">
+                                                                <b>Docket Number:-</b>
+                                                                <span class="d-inline-block" id="docketNumber"></span>
+                                                            </li>
+                                                            <li class="mt-1">
+                                                                <b>File Name :-</b>    
+                                                                <span class="d-inline-block" id="fileName"></span>
+                                                            </li>
+                                                            <li class="mt-1">
+                                                                <b>Line Number Of File :-</b>    
+                                                                <span class="d-inline-block" id="lineNumber"></span>
+                                                            </li>
+                                                            <li class="mt-1">
+                                                                <b>Error :-</b>    
+                                                                <span class="d-inline-block" id="error"></span>
+                                                            </li>
+                                                            <li class="mt-1">
+                                                                <b>Status :-</b>    
+                                                                <span class="d-inline-block" id="status"></span>
+                                                            </li>
+                                                            <li class="mt-1">
+                                                                <b>Data of entry :-</b>    
+                                                                <span class="d-inline-block" id="data"></span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% comment %} View error Model end {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footerStyleEnd %}
+
+<script>
+    const csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    $(document).ready(function () {
+        $('#datatable-buttons').DataTable();
+        $('#solved-datatable-buttons').DataTable();
+
+        $('#no').click(function(){
+            $('#save_').prop('checked', false);
+        })
+
+    });
+    function showModel(data) {
+        $("#errorModel").modal("toggle");
+        $.ajax({
+            type: "POST",
+            url: "/account/pastTrip/error/get/",
+            data: {
+              id: data.id,
+            },
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            success: function (data) {
+                console.log(data.data)
+              $("#tripDate").text(data.data.tripDate);
+              $("#truckNo").text(data.data.truckNo);
+              $("#docketNumber").text(data.data.docketNumber);
+              $("#fileName").text(data.data.fileName);
+              $("#lineNumber").text(data.data.lineNumber);
+              $("#error").text(data.data.errorFromPastTrip);
+              $("#data").text(data.data.data);
+
+              if(data.data.status){
+                $("#status").text("Solved");
+              }else{
+                $("#status").text("Unsolved");
+              }
+            },
+          });
+    }
+
+    $("#save_").click(function(){
+        alert('Please ensure, All trucks, ratecard and client truck connections are correctly configured for the data you are about to add. Incorect mappings may lead to failure of adding data.')
+    })
+</script>
+
+<!-- Datatables -->
+<script src="{% static 'Dashboard/vendors/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons/js/buttons.flash.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-scroller/js/dataTables.scroller.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/jszip/dist/jszip.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/pdfmake/build/pdfmake.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/pdfmake/build/vfs_fonts.js' %}"></script>
+
+{% endblock %}

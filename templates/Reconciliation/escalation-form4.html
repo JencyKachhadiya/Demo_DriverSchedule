@@ -1,0 +1,81 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Escalation form {% endblock %}
+
+{% block content %}
+<div class="right_col">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Escalation form</h2>
+                        
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+
+                        <!-- Smart Wizard -->
+                        <div id="wizard" class="form_wizard wizard_horizontal">
+                            <ul class="wizard_steps anchor p-0">
+                                <li>
+                                    <a href="javascript:void(0)" class="selected" isdone="1" rel="1">
+                                        <span class="step_no">1</span>
+                                        <span class="step_descr">
+                                            <br>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)" class="selected" isdone="0" rel="2">
+                                        <span class="step_no">2</span>
+                                        <span class="step_descr">
+                                            <br>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)" class="selected" isdone="0" rel="3">
+                                        <span class="step_no">3</span>
+                                        <span class="step_descr">
+                                            <br>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)" class="selected" isdone="0" rel="4">
+                                        <span class="step_no">4</span>
+                                        <span class="step_descr">
+                                            <br>
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                            {% if escalationObj.escalationStep == 5 %}
+                                <h5 class="text-center my-5"><i class="fa-solid fa-circle-dot mr-2"></i> This Docket is complete.</h5>
+                            {% else %}
+                                <form  action="{% url 'Account:reconciliationEscalationComplete' id=escalationObj.id %}" method="POST" class="form-horizontal form-label-left">
+                                    {% csrf_token%}
+                                    <h5 class="text-center my-5"><i class="fa-solid fa-circle-dot mr-2"></i> Do you want to complete this docket? If yes than click on Finish button.</h5>
+                                    <div class="float-right">
+                                        <a href="{% url 'Account:reconciliationEscalationForm3' id=escalationObj.id %}" class="buttonPrevious buttonDisabled btn btn-primary">Previous</a>
+                                        <button type="submit" class="buttonNext btn btn-success">Finish</button>
+                                    </div>
+                                </form>
+                            {% endif %} 
+                        </div>
+                        <!-- End SmartWizard Content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footerStyleEnd %}
+
+{% endblock %}
+

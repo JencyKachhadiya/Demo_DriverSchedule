@@ -1,0 +1,54 @@
+{% extends "Trip_details/main/main.html" %}
+{% load static %}
+{% block title %}Open Jobs{% endblock title %}
+
+{% block headStyle %} 
+    <style>
+        .accept-job i{
+            font-size:1.6rem;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+
+<div class="container mt-2" id="container">
+    <div class="card border-0">
+        <div class="card-body">
+            <h5 class="card-title text-uppercase text-default">Open Jobs</h5>
+            <hr>     
+            <div class="row">
+                {% if jobs %}
+                    {% for job in jobs %}
+                        <div class="col-md-3 col-sm-3 mt-2">
+                            <div class="card rounded-0 bg-light mb-3">
+                                <div class="card-header text-uppercase bg-danger rounded-0">
+                                    <a href="{% url 'Account:singleJobView' id=job.id%}"><h5  class="card-title d-inline-block text-uppercase text-white pt-1">{{job.Title}}</h5></a>
+                                    <a href="{% url "Account:finishJob" id=job.id %}" class="accept-job float-end"><i class="fa-solid fa-check-double px-1 text-white" title="Complete" ></i></a>
+                                </div>
+                                <div class="card-body">
+                                    <div>
+                                        <b style="font-size: 0.85rem;">Start Time: </b><span>{{job.Start_Date_Time}} </span>
+                                    </div>
+                                    <div>
+                                        <b style="font-size: 0.85rem;">End Time: </b><span>{{job.End_Date_Time}} </span>
+                                    </div>
+                                    
+                                    <h6 class="font-weight-bolder mt-2">{{job.Origin}}</h6>
+                                    <p class="card-text">{{job.Origin.address}}</p>
+                                </div>
+                              </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h6 class="text-muted">No Open Job Found</h6>
+                {% endif %}
+            </div>       
+
+        </div>
+    </div>
+</div>
+    
+{% endblock %}
+{% block footerStyle %}
+{% endblock  %}

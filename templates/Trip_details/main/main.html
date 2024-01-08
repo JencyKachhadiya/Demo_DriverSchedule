@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>PNR Group | {% block title %} {% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/driverSide_basic.css' %}">
+    <!-- Font Awesome -->
+    <link href="{% static 'Dashboard/vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/88bf84b9d4.js" crossorigin="anonymous" ></script>
+    
+    <!-- Extraa css / alertify css -->
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"
+    />
+    <!-- js  -->
+    <script src="{% static 'js/vendor/bootstrap5/dselect.js' %}"></script>
+    <!-- Default theme -->
+    <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"
+    />
+    <style>
+      body {
+        font-family: 'Open Sans', sans-serif;
+      }
+      .nav-item{
+        text-align:center;
+      }
+      .text-default{
+        color:#2A3F54!important
+      }
+      .btn-default {
+          background: #3e5164;
+          color: white;
+      }
+      .btn-default:hover{
+        background: #435a71;
+        color: white;
+      }
+      .bg-default{
+        background-color : #2A3F54!important;
+        color : white;
+      }
+
+      .alertify-notifier.ajs-right .ajs-message.ajs-visible{
+        right:260px!important
+      }
+    </style>
+    {% block headStyle %} {% endblock %}
+  </head>
+
+  <body>
+
+    {% include "Trip_details/main/navbar.html"%}
+
+    {% block content %}{% endblock %} 
+
+    {% include "Trip_details/main/footer.html"%}
+
+    <!-- footer start scripts  -->
+    {% block footerStyle %} {% endblock %}
+
+    <!-- jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src='{% static "Dashboard/vendors/jquery/dist/jquery.min.js" %}'></script>
+    <!-- Bootstrap -->
+    <script src='{% static "Dashboard/vendors/bootstrap/dist/js/bootstrap.bundle.min.js" %}'></script>
+    <!-- bootstrap-progressbar -->
+    <script src='{% static "Dashboard/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js" %}'></script>
+  
+    <!-- Custom Theme Scripts -->
+    <script src='{% static "Dashboard/build/js/custom.min.js" %}'></script>
+    <!-- Include Bootstrap JS -->
+    <script src="/static/js/vendor/bootstrap5/bootstrap5.bundle.min.js"></script>
+
+    <!-- jquery cdn  -->
+    <script src="{% static 'js/vendor/jquery/jquery-3.7.0.min.js'%}"></script>
+    <script src="{% static 'js/vendor/jquery/jquery.validate.min.js'%}"></script>
+
+    <!-- JavaScript / alertify JS -->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+
+    {% for message in messages %}
+    <script>
+      alertify.set('notifier', 'position', 'top-right');
+      {% if message.tags == 'error' %}
+        alertify.error('{{ message|escapejs }}');
+      {% elif message.tags == 'success' %}
+        alertify.success('{{ message|escapejs }}');
+      {% elif message.tags == 'warning' %}
+        alertify.warning('{{ message|escapejs }}');
+      {% endif %}
+    </script>
+    {% endfor %}
+
+    <!-- footer end scripts  -->
+    {% block footerStyleEnd %} {% endblock %}
+  </body>
+</html>

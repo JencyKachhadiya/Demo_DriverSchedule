@@ -1,0 +1,363 @@
+{% extends "main/main.html" %} {% load static %} {% block title %} | Driver Docket {% endblock %} {% block headStyle %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<style>
+    .cuatom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(255, 0, 0) !important;
+        border-radius: 7px !important;
+    }
+
+    @media (max-width: 576px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+</style>
+{% endblock %} {% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <form class="" method="POST" action="{% if errorId %}{% url 'Account:driverDocketErrorEntrySave' ids=id errorId=errorId%}{% else %}{% url 'Account:driverDocketEntrySave' ids=id%}{% endif %}" novalidate enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="x_panel">
+                        <div class="x_title">
+                            {% if not docketData %}
+                            <h2> Driver Docket Entry Form </h2>
+                            {% else %}
+                            <h2>Docket View</h2>
+                            {% comment %} <p> heell{{errorId}}</p> {% endcomment %}
+
+                            {% endif %}
+                                <div class="float-right">
+                                    <input type="radio" id="tippingToYard" name="returnToYard" 
+                                    style="margin-top: .8rem;"  onclick="returnToYard_(this)" value="returnToYard"  {% if docketData.returnToYard %}checked{% endif %}>
+                                    <label for="tippingToYard" class=" ml-2"
+                                    style="margin-right: 1rem; padding-top:0.7rem;">Tipping To Yard</label>
+                                    <input type="radio" id="returnToYard" name="returnToYard" value="tippingToYard"
+                                    style="margin-top: .8rem;"  onclick="returnToYard_(this)"  {% if docketData.tippingToYard %}checked{% endif %}>
+                                    <label for="returnToYard" class=" ml-2"
+                                        style="margin-right: 1rem; padding-top:0.7rem;">Return To Yard</label>
+                                    {% comment %} {% if not docketData %} {% endcomment %}
+                                    <i class="fa fa-close text-danger ml-2" style="font-size: 1.2rem;" id="resetRadio"></i>
+                                    {% comment %} {% endif %} {% endcomment %}
+                                </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="shiftDate">ShiftDate :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="date"
+                                            name="shiftDate" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="shiftDate" value="{% if docketData %}{{ docketData.tripDate }}{% endif %}"{% if docketData.tripDate %}readonly{% endif %}>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="docketNumber">Docket Number :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="text"
+                                            name="docketNumber" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="docketNumber" value="{% if docketData %}{{ docketData.docketNumber }}{% endif %}" {% if docketData.docketNumber %}readonly{% endif %}>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="docketFile">DocketFile :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="file"
+                                            name="docketFile" style="padding: 0.25rem 0.2rem;" required="required"
+                                            id="docketFile">
+                                    </div>
+                                </div>
+                                <!-- basePlant noOfKm  transferKM  -->
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="basePlant">basePlant :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select name="basePlant" class="form-control" >
+                                            {% for basePlant_ in basePlants %}
+                                            <option {% if docketData.basePlant.basePlant == basePlant_.basePlant %}selected{% endif %} value="{{basePlant_.id}}">{{ basePlant_.basePlant }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="noOfKm">No Of Km:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="noOfKm" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="noOfKm"  value="" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="transferKM">Transfer Km :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="transferKM" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="transferKM" value="{% if docketData %}{{ docketData.transferKM }}{% endif %}" >
+                                    </div>
+                                </div>
+                                <!--    returnQty  returnKm  waitingTimeStart      -->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="returnQty">Return Qty:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="returnQty" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="returnQty" disabled value="{% if docketData %}{{ docketData.returnQty }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="returnKm">Return Km:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="returnKm" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="returnKm" disabled value="{% if docketData %}{{ docketData.returnKm }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="waitingTimeStart">Waiting Time Start :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"   type="time"
+                                            name="waitingTimeStart" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="waitingTimeStart" value="{% if docketData %}{{ docketData.waitingTimeStart }}{% endif %}" >
+                                    </div>
+                                </div>
+
+                                {% comment %} totalWaitingInMinute waitingTimeEnd surcharge_type {% endcomment %}
+                                
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="waitingTimeEnd">Waiting Time End :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" readonly type="time"
+                                            name="waitingTimeEnd" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="waitingTimeEnd" value="{% if docketData %}{{ docketData.waitingTimeEnd }}{% endif %}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="totalWaitingInMinute">Total Waiting In Minute :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" readonly  type="number"
+                                            name="totalWaitingInMinute" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="totalWaitingInMinute" value="{% if docketData %}{{ docketData.totalWaitingInMinute }}{% endif %} ">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="surcharge_type">Surcharge Type:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select name="surcharge_type" class="form-control">
+                                            {% for surcharge in surcharges %}
+                                            <option value="{{surcharge.id}}" {% if docketData.surcharge_type.surcharge_Name == surcharge.surcharge_Name %}selected{% endif %}>{{surcharge.surcharge_Name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <!--     surcharge_duration    cubicMl standByStartTime -->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="surcharge_duration">Surcharge Duration :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="surcharge_duration" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="surcharge_duration" value="{% if docketData %}{{ docketData.surcharge_duration }}{% endif %}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="cubicMl">Cubic Meter :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="cubicMl" required="required"
+                                            style="padding: 0.25rem 0.2rem;" id="cubicMl" value="{% if docketData %}{{ docketData.cubicMl }}{% endif %}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="standByStartTime">StandBy start Time :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="time" 
+                                            name="standByStartTime" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="standByStartTime" value="{% if docketData %}{{ docketData.standByStartTime }}{% endif %}">
+                                    </div>
+                                </div>
+                                <!--     standByEndTime   others  comment-->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="standByEndTime">StandBy End Time :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="time" readonly
+                                            name="standByEndTime" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="standByEndTime" value="{% if docketData %}{{ docketData.standByEndTime }}{% endif %}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="standBySlot">Stand By Slot :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" readonly  type="number"
+                                            name="standBySlot" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="standBySlot" value="{% if docketData %}{{ docketData.standBySlot }}{% endif %} ">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="others">Others :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  type="number"
+                                            name="others" style="padding: 0.25rem 0.2rem;"
+                                            required="required" id="others" value="{% if docketData %}{{ docketData.others }}{% endif %}" >
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-12 col-sm-12">
+                                    <label for="comment">Comment :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <textarea placeholder="comment" id="comment" name="comment"
+                                            class="form-control">{% if docketData %}{{ docketData.comment }}{% endif %}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 text-right p-0">
+                                <button type='submit' style="margin: 0px;" id="submit_" class="btn btn-primary px-4">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+{% endblock %}
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+    integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    var validator = new FormValidator(
+        {
+            events: ["blur", "input", "change"],
+        },
+        document.forms[0]
+    );
+    // on form "submit" event
+    document.forms[0].onsubmit = function (e) {
+        var submit = true,
+            validatorResult = validator.checkAll(this);
+        console.log(validatorResult);
+        return !!validatorResult.valid;
+    };
+    // on form "reset" event
+    document.forms[0].onreset = function (e) {
+        validator.reset();
+    };
+    // stuff related ONLY for this demo page:
+    $('.toggleValidationTooltips').change(function () {
+        validator.settings.alerts = !this.checked;
+        if (this.checked)
+            $('form .alert').remove();
+    }).prop('checked', false);
+    
+    function returnToYard_(data){
+        let selected = $(`#${data.id}`).is(':checked')
+        if(selected){
+            $('#returnQty').removeAttr('disabled')
+            $('#returnKm').removeAttr('disabled')
+        }else{
+            $('#returnQty').attr('disabled',true)
+            $('#returnKm').attr('disabled',true)
+        }
+    }
+
+    $("#resetRadio").click(function(){
+        $("input[type='radio']").removeAttr('checked')
+        $('#returnQty').attr('disabled',true)
+        $('#returnKm').attr('disabled',true)
+    });
+    $(document).ready(function(){
+        $("#waitingTimeStart").on('change',function(){
+            let waitingTimeStart = $(this).val()
+            if(waitingTimeStart){
+                $("#waitingTimeEnd").removeAttr('readonly');
+            }
+        })
+        $("#standByStartTime").on('change',function(){
+            let standByStartTime = $(this).val()
+            if(standByStartTime){
+                $("#standByEndTime").removeAttr('readonly');
+            }
+        })
+
+        $("#waitingTimeEnd").on('change',function(){
+            let waitingTimeEnd = $("#waitingTimeEnd").val()
+            let waitingTimeStart = $("#waitingTimeStart").val()
+            if(waitingTimeStart && waitingTimeEnd){
+                $.ajax({
+                    type: "POST",
+                    url: "/account/driverDocket/waitingTime/count/",
+                    data: {
+                        tripId : {{id}},
+                        waitingTimeEnd : waitingTimeEnd,
+                        waitingTimeStart : waitingTimeStart,
+                    },
+                    beforeSend: function (xhr) {
+                      xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
+                    success: function (data) {
+                        console.log(data.totalWaitingTime)
+                        $("#totalWaitingInMinute").val(data.totalWaitingTime)
+                    },
+                  });
+            }
+        })
+        $("#standByEndTime").on('change',function(){
+            let standByStartTime = $("#standByStartTime").val()
+            let standByEndTime = $("#standByEndTime").val()
+            if(standByStartTime && standByEndTime){
+                $.ajax({
+                    type: "POST",
+                    url: "/account/driverDocket/standByTime/count/",
+                    data: {
+                        tripId : {{id}},
+                        standByStartTime : standByStartTime,
+                        standByEndTime : standByEndTime,
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
+                    success: function (data) {
+                        console.log(data.totalWaitingTime)
+                        $("#standBySlot").val(data.standBySlot)
+                    },
+                });
+            }
+        })
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,107 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Escalation Form {% endblock %}
+{% block headStyle %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}" />
+<style>
+    .cuatom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(255, 0, 0) !important;
+        border-radius: 7px !important;
+    }
+
+    @media (max-width: 576px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <form class="" method="POST" action="#" novalidate
+                    enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Escalation Form</h2>
+
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+                                <!-- driver-id client-name shift-type  -->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="docketNumber">Docket Number :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" {% if escalationObj %} type="number" disabled {% endif %} value="{{escalationObj.docketNumber}}" type="number"
+                                            name="docketNumber" required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="docketNumber">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="docketDate">Docket Date :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" {% if escalationObj %} type="text" disabled {% else %} type="date" {% endif %}  value="{{ escalationObj.docketDate}}" 
+                                            name="numberOfLoads" required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="numberOfLoads">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="clientName">Client Name :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select name="clientName" class="form-control">
+                                            {% for client in clientObj %}
+                                            {{escalationObj.clientName.clientId}}
+                                            {{C_id.clientId}}
+                                            <option   {% if escalationObj.clientName.clientId == C_id.clientId %}selected {%endif %} value="{{ client.clientId }}">{{ client.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+{% endblock %}
+
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+
+{% endblock %}

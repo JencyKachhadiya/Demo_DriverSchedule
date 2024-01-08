@@ -1,0 +1,185 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Escalation form {% endblock %}
+
+{% block content %}
+<div class="right_col">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Escalation form</h2>
+                        
+                        
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+
+                        <!-- Smart Wizard -->
+                        <div id="wizard" class="form_wizard wizard_horizontal">
+                            <ul class="wizard_steps anchor p-0">
+                                <li>
+                                    <a href="javascript:void(0)" class="selected" isdone="1" rel="1">
+                                        <span class="step_no">1</span>
+                                        <span class="step_descr">
+                                            <br>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)" class="selected" isdone="0" rel="2">
+                                        <span class="step_no">2</span>
+                                        <span class="step_descr">
+                                            <br>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)" class="disabled" isdone="0" rel="3">
+                                        <span class="step_no">3</span>
+                                        <span class="step_descr">
+                                            <br>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)" class="disabled" isdone="0" rel="4">
+                                        <span class="step_no">4</span>
+                                        <span class="step_descr">
+                                            <br>
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <form  action = "{% url 'Account:reconciliationEscalationForm3' id=escalationObj.id %}" method="POST" class="form-horizontal form-label-left">
+                                {% csrf_token%}
+
+
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="float-right">
+                                                <input type="radio" id="internal" name="escalation" value="internal" {% if escalationObj.escalationType == 'Internal' %}checked{% endif %}>
+                                                <label for="internal">Internal Escalation</label> &nbsp;
+                                                <input type="radio" {% if escalationObj.escalationType == 'External' or escalationObj.escalationType == ''  %}checked{% endif %} name="escalation" value="external" id="external">
+                                                <label for="external" >External Escalation</label>
+                                            </div>
+                                            <table class="table">
+                                                <thead>
+                                                    <th>Cost</th>
+                                                    <th>Driver</th>
+                                                    <th>RCTI</th>
+                                                    <th>Difference</th>
+                                                </thead>
+                                                <tbody>
+                                                    {% if loadKmCostDifference != 0 %}
+                                                    <tr>
+                                                        <td><b>LoadKm Cost</b></td>
+                                                        <td>{{data.driverLoadAndKmCost}}</td>
+                                                        <td>{{data.rctiLoadAndKmCost}}</td>
+                                                        <td class="{% if loadKmCostDifference < 0 %}text-success {%else%} text-danger {% endif%}"> {{loadKmCostDifference}}</td>
+                                                    </tr>
+                                                    {% endif %}
+
+                                                    {% if surchargeCostDifference != 0 %}
+                                                    <tr>
+                                                        <td><b>Surcharge Cost</b></td>
+                                                        <td>{{data.driverSurchargeCost}}</td>
+                                                        <td>{{data.rctiSurchargeCost}}</td>
+                                                        <td class="{% if surchargeCostDifference < 0 %}text-success {%else%} text-danger {% endif%}">{{surchargeCostDifference}}</td>
+                                                    </tr>
+                                                    {% endif %}
+
+                                                    {% if waitingTimeCostDifference != 0 %}
+                                                    <tr>
+                                                        <td><b>Waiting Time Cost</b></td>
+                                                        <td>{{data.driverWaitingTimeCost}}</td>
+                                                        <td>{{data.rctiWaitingTimeCost}}</td>
+                                                        <td class="{% if waitingTimeCostDifference < 0 %}text-success {%else%} text-danger {% endif%}">{{waitingTimeCostDifference}}</td>
+                                                    </tr>
+                                                    {% endif %}
+
+
+                                                    {% if transferKmCostDifference != 0 %}
+                                                    <tr>
+                                                        <td><b>TransferKm Cost</b></td>
+                                                        <td>{{data.driverTransferKmCost}}</td>
+                                                        <td>{{data.rctiTransferKmCost}}</td>
+                                                        <td class="{% if transferKmCostDifference < 0 %}text-success {%else%} text-danger {% endif%}">{{transferKmCostDifference}}</td>
+                                                    </tr>
+                                                    {% endif %}
+
+
+                                                    {% if returnKmCostDifference != 0 %}
+                                                    <tr>
+                                                        <td><b>ReturnKm Cost</b></td>
+                                                        <td>{{data.driverReturnKmCost}}</td>
+                                                        <td>{{data.rctiReturnKmCost}}</td>
+                                                        <td class="{% if returnKmCostDifference < 0 %}text-success {%else%} text-danger {% endif%}">{{returnKmCostDifference}}</td>
+                                                    </tr>
+                                                    {% endif %}
+
+                                                    {% if otherCostDifference != 0 %}
+                                                    <tr>
+                                                        <td><b>Other Cost</b></td>
+                                                        <td>{{data.driverOtherCost}}</td>
+                                                        <td>{{data.rctiOtherCost}}</td>
+                                                        <td class="{% if otherCostDifference < 0 %}text-success {%else%} text-danger {% endif%}">{{otherCostDifference}}</td>
+                                                    </tr>
+                                                    {% endif %}
+
+                                                    {% if standByCostDifference != 0 %}
+                                                    <tr>
+                                                        <td><b>standByCostDifference</b></td>
+                                                        <td>{{data.driverStandByCost}}</td>
+                                                        <td>{{data.rctiStandByCost}}</td>
+                                                        <td class="{% if standByCostDifference < 0 %}text-success {%else%} text-danger {% endif%}">{{standByCostDifference}}</td>
+                                                    </tr>
+                                                    {% endif %}
+
+                                                    {% if loadDeficitDifference != 0 %}
+                                                    <tr>
+                                                        <td><b> loadDeficitDifference </b></td>
+                                                        <td>{{data.driverLoadDeficit}}</td>
+                                                        <td>{{data.rctiLoadDeficit}}</td>
+                                                        <td class="{% if loadDeficitDifference < 0 %}text-success {%else%} text-danger {% endif%}">{{loadDeficitDifference}}</td>
+                                                    </tr>
+                                                    {% endif %}
+
+                                                    {% if totalCostDifference != 0 %}
+                                                    <tr>
+                                                        <td><b> totalCostDifference </b></td>
+                                                        <td>{{data.driverTotalCost}}</td>
+                                                        <td>{{data.rctiTotalCost}}</td>
+                                                        <td class="{% if totalCostDifference < 0 %}text-success {%else%} text-danger {% endif%}">{{totalCostDifference}}</td>
+                                                    </tr>
+                                                    {% endif %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="float-right">
+                                    <a href="{% url 'Account:reconciliationEscalationForm' id=data.id %}" class="buttonPrevious buttonDisabled btn btn-primary">Previous</a>
+                                    <button type="submit" class="buttonNext btn btn-success">Next</button>
+                                </div>
+                            </form>
+
+                        </div>
+                        <!-- End SmartWizard Content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footerStyleEnd %}
+
+{% endblock %}
+

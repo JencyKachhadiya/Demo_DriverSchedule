@@ -1,0 +1,181 @@
+{% extends "main/main.html" %} {% load static %} {% block title %} | Truck connection form
+request {% endblock %} {% block headStyle %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+{% endblock %} {% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Add truck connection</h2>
+                        <div class="clearfix"></div>
+                    </div>
+
+
+
+                    <div class="x_content">
+                        <div class="cuatom-continer">
+                            <form action="{% url 'gearBox:truckConnectionSaveView' id=id %}" method="POST" novalidate>
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="clientTruckNumber" class="col-form-label col-md-3 col-sm-3 label-align">Client truck number :<span class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <input class="form-control" type="number" name="clientTruckNumber" required style="padding: 0.25rem 0.2rem;" id="clientTruckNumber">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="clientId" class="col-form-label col-md-3 col-sm-3 label-align">Client name:<span class="required">*</span></label>
+
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <select name="clientId" onchange="rateCard(this)" class="form-control" required="required">
+                                                <option disabled selected >Select Client Name</option>
+                                                {% for client in clientIds%}
+                                                <option value="{{client.clientId}}">{{client.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="rate_card_name"
+                                            class="col-form-label col-md-3 col-sm-3 label-align">Rate card :<span
+                                                class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                                <select name="rate_card_name" disabled class="form-control" id="rate_card_name" required="required" >
+                                                    
+                                                </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="startDate"
+                                            class="col-form-label col-md-3 col-sm-3 label-align">Start Date :<span
+                                                class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <input class="form-control" name="startDate" required="required"
+                                                id="startDate" type="date"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="endDate"
+                                            class="col-form-label col-md-3 col-sm-3 label-align">End Date :<span
+                                                class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <input class="form-control" name="endDate" required="required"
+                                                id="endDate" type="date"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="truckType" class="col-form-label col-md-3 col-sm-3 label-align">Truck type:<span class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <select name="truckType" class="form-control" id="truckType" {% if data %}disabled{% endif %}>
+                                                <option value="Embedded" {% if data.truckType == 'Embedded' %} selected {% endif %} >Embedded</option>
+                                                <option value="Casual" {% if data.truckType == 'Casual' %} selected {% endif %}>Casual</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                              
+                                <div class="row">
+                                    <div class="col-md-9 col-sm-9 text-right">
+                                        <button type="reset" class="btn btn-success px-4">
+                                            Reset
+                                        </button>
+                                        <button type="submit" class="btn btn-primary px-4">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+    integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    // initialize a validator instance from the "FormValidator" constructor.
+    // A "<form>" element is optionally passed as an argument, but is not a must
+    var validator = new FormValidator(
+        {
+            events: ["blur", "input", "change"],
+        },
+        document.forms[0]
+    );
+    // on form "submit" event
+    document.forms[0].onsubmit = function (e) {
+        var submit = true,
+            validatorResult = validator.checkAll(this);
+        console.log(validatorResult);
+        return !!validatorResult.valid;
+    };
+    // on form "reset" event
+    document.forms[0].onreset = function (e) {
+        validator.reset();
+    };
+    // stuff related ONLY for this demo page:
+    $(".toggleValidationTooltips")
+        .change(function () {
+            validator.settings.alerts = !this.checked;
+            if (this.checked) $("form .alert").remove();
+        })
+        .prop("checked", false);
+    
+    const csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    function rateCard(dataRow){
+        clientName = $(dataRow).val()
+        if (clientName)
+        {
+        
+            $.ajax({
+                url: "/gearBox/getRateCard/",
+                method: "POST",
+                data: {
+                    'clientName' : clientName,
+                },
+                beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                success: function (data) {
+                    $("#rate_card_name").empty()
+                    data.rateCard.forEach(function (item) {
+                        $("#rate_card_name").append(
+                        '<option value="' + item['id'] + '">' + item['rate_card_name'] + "</option>"
+                        );
+                    });
+                    $('#rate_card_name').removeAttr('disabled');
+                },
+            });
+    }
+    }
+</script>
+{% endblock %} {% endblock %}

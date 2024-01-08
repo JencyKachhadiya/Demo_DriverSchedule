@@ -1,0 +1,404 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | RCTI form{% endblock %}
+{% block headStyle %}
+
+<!-- Datatables -->
+<link href="{% static 'Dashboard/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'Dashboard/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'Dashboard/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}"
+  rel="stylesheet">
+<link href="{% static 'Dashboard/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}"
+  rel="stylesheet">
+<link href="{% static 'Dashboard/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}"
+  rel="stylesheet">
+
+<style>
+  .dt-buttons.btn-group {
+    float: right ! important;
+  }
+
+  /* Hide all buttons (copy,csv,excel,pdf,print) */
+  .dt-buttons.btn-group>a {
+    display: none !important;
+  }
+
+  table button{
+    border: 0!important;
+    background-color: transparent;
+  }
+
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="right_col" role="main">
+  <div class="">
+    <div class="clearfix"></div>
+    <div class="row">
+
+      {% comment %} RCTI ENTRY  {% endcomment %}
+      <div class="col-md-12 col-sm-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>Report Entry</h2>
+
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <div class="cuatom-continer">
+              <form class="" method="POST" action="{% url 'Account:reportSave'%}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="col-md-4 col-sm-4">
+                  <label for="primaryFile">Upload Primary File:<span class="required">*</span></label>
+                  <div class="field item form-group">
+                    <input class="form-control" type="file" name="primaryFile" required style="padding: 0.25rem 0.2rem;"
+                      id="primaryFile" accept=" .xlsx">
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                  <label for="secondaryFile">Upload Secondary File :<span class="required">*</span></label>
+                  <div class="field item form-group">
+                    <input class="form-control" type="file" name="secondaryFile" required style="padding: 0.25rem 0.2rem;"
+                      id="secondaryFile" accept = " .xlsx">
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" {% if rctiErrors %}data-toggle="modal" data-target="#warningModal" {%endif%} name="save"  required id="save_" style="margin-top: 2.5rem;" value="1"> Save Data In Database
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-12 text-right">
+                  <button type="submit" class="btn btn-primary px-4">Submit</button>
+                </div>
+                <!-- Button trigger modal -->
+                                <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#warningModal">
+                                  Launch demo modal
+                                </button> -->
+
+                <!-- Modal -->
+                <div class="modal fade" id="warningModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="warningModalTitle">Rcti Data Save Model</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                      There are still unresolved errors. Do you want to continue?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="no" data-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+
+      {% comment %} RCTI ERRORS  {% endcomment %}
+      <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2><i class="fa fa-bars"></i> RCTI <small>Errors</small></h2>
+            <ul class="nav navbar-right panel_toolbox">
+              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+              </li>
+      
+              </li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+
+          
+          <div class="x_content">
+
+            <ul class="nav nav-tabs bar_tabs" id="myTab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Error</a>
+              </li>
+              {% comment %} <li class="nav-item">
+                <a class="nav-link" id="Archive-tab" data-toggle="tab" href="#Archive" role="tab" aria-controls="Archive" aria-selected="false">Archive</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Solved</a>
+              </li> {% endcomment %}
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <!-- Error Table  -->
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Error</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content" style="max-height: 120vh; overflow-y: auto;">
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div class="card-box table-responsive">
+                          <table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
+                              <tr>
+                                <th>View</th>
+                                <th>Client</th>
+                                <th>DocketNumber</th>
+                                <th>DocketDate</th>
+                                <th >ErrorDescription</th>
+                                <th>FileName</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for error in rctiErrors %}
+                              <tr>
+                                <td><button type="button" onclick="showModel(this)" id="{{error.id}}"><i class="fa-solid fa-eye"></i></button></td>
+                                <td>{{ error.clientName }}</td>
+                                <td> {{ error.docketNumber }}</td>
+                                <td >{{error.docketDate}}</td>
+                                <td>{{error.errorDescription}}</td>
+                                <td>{{error.fileName}}</td>
+                                <td>
+                                {% comment %} {% url 'Account:rctiErrorSolve' id=error.id%} {% endcomment %}
+
+                                {% comment %} <td> {% if error.status is False %} <a href="#" onclick="wip()" class="btn btn-sm btn-info"> Resolve</i></a>{% endif%}</td> {% endcomment %}
+                                {% if 'Earning Depot/Location does not exist' in error.errorDescription %}
+                                <a href="{% url 'Account:basePlantAdd' %}" target="_blank"  title="solved" class="btn btn-sm btn-primary">  Add depot  </a>
+                                {% elif 'Manually Manage.' in error.errorDescription %}
+                                <a href="{% url 'Account:topUpForm' id=error.id %}" target="_blank"  title="solved" class="btn btn-sm btn-danger"> Manually Solve  </a>
+                                {% else %}
+                                <a href="{% url 'Account:rctiErrorSolve' id=error.id %}" target="_blank"  title="solved" class="btn btn-sm btn-success">  Resolve  </a> 
+                                
+                                 {% endif %}
+                                </td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- End Error Table  -->
+              </div>
+
+              <div class="tab-pane fade" id="Archive" role="tabpanel" aria-labelledby="Archive-tab">
+                <!--Archive Table  -->
+          
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Archive</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content" style="max-height: 120vh; overflow-y: auto;">
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div class="card-box table-responsive">
+                          <table id="solved-datatable-buttons" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
+                              <tr>
+                                <th>View</th>
+                                <th>DocketNumber</th>
+                                <th>DocketDate</th>
+                                <th>Solved Description</th>
+                                <th>FileName</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for solve in rctiManually %}
+                              <tr>
+                                <td><button type="button" onclick="showModel(this)" id="{{error.id}}"><i class="fa-solid fa-eye"></i></button></td>
+                                <td>{{ solve.docketNumber }}</td>
+                                <td>{{solve.docketDate}}</td>
+                                <td>{{solve.errorDescription}}</td>
+                                <td>{{solve.fileName}}</td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End ArchiveTable  -->
+
+                
+              </div>
+              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <!-- Solve Table  -->
+          
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Solved</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content" style="max-height: 120vh; overflow-y: auto;">
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div class="card-box table-responsive">
+                          <table id="solved-datatable-buttons" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
+                              <tr>
+                                <th>View</th>
+                                <th>DocketNumber</th>
+                                <th>DocketDate</th>
+                                <th>Solved Description</th>
+                                <th>FileName</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for solve in rctiSolve %}
+                              <tr>
+                                <td><button type="button" onclick="showModel(this)" id="{{error.id}}"><i class="fa-solid fa-eye"></i></button></td>
+                                <td>{{ solve.docketNumber }}</td>
+                                <td>{{solve.docketDate}}</td>
+                                <td>{{solve.errorDescription}}</td>
+                                <td>{{solve.fileName}}</td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End Solve Table  -->
+
+                
+              </div>
+              
+
+              {% comment %} View error Model start {% endcomment %}
+              <div class="modal fade" id="errorModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+               <div class="modal-dialog modal-dialog-centered" role="document">
+                   <div class="modal-content">
+       
+                       <div class="modal-header">
+                           <h5 class="modal-title">Error details</h5>
+                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                               <span aria-hidden="true">&times;</span>
+                           </button>
+                       </div>
+       
+                       <div class="modal-body">
+                           <div class="container-fluid">
+                               <div class="row mt-2">
+                                   <div class="col-md-12">
+                                       <ul>
+                                          <li class="mt-1">
+                                              <b>Docket Number:-</b>
+                                              <span class="d-inline-block" id="docketNumber"></span>
+                                          </li>
+                                          <li class="mt-1">
+                                              <b>Docket Date:-</b>
+                                              <span class="d-inline-block" id="docketDate"></span>
+                                          </li>
+                                          <li class="mt-1">
+                                              <b>Error Description :-</b>
+                                              <span class="d-inline-block" id="errorDescription"></span>
+                                          </li>
+                                          <li class="mt-1">
+                                              <b>File Name :-</b>    
+                                              <span class="d-inline-block" id="fileName"></span>
+                                          </li>
+                                          <li class="mt-1">
+                                              <b>Status :-</b>    
+                                              <span class="d-inline-block" id="status"></span>
+                                          </li>
+                                          <li class="mt-1">
+                                              <b>Data of entry :-</b>    
+                                              <span class="d-inline-block" id="data"></span>
+                                          </li>
+                                       </ul>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           {% comment %} View error Model end {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block footerStyleEnd %}
+<script src="{% static 'js/reconciliation_analysis.js' %}"></script>
+
+<script>
+  // const csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+  $(document).ready(function () {
+    $('#datatable-buttons').DataTable();
+    $('#solved-datatable-buttons').DataTable();
+
+    $('#no').click(function(){
+      $('#save_').prop('checked', false);
+    })
+
+  });
+  function wip(){
+    alert('Work in progress')
+  }
+  function showModel(data) {
+    $("#errorModel").modal("toggle");
+    $.ajax({
+        type: "POST",
+        url: "/account/rcti/error/get/",
+        data: {
+          id: data.id,
+        },
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        },
+        success: function (data) {
+            console.log(data.data)
+          $("#docketNumber").text(data.data.docketNumber);
+          $("#docketDate").text(data.data.docketDate);
+          $("#errorDescription").text(data.data.errorDescription);
+          $("#fileName").text(data.data.fileName);
+          $("#data").text(data.data.data);
+          
+          if(data.data.status){
+            $("#status").text("Solved");
+          }else{
+            $("#status").text("Unsolved");
+          }
+        },
+      });
+  }
+</script>
+<!-- Datatables -->
+<script src="{% static 'Dashboard/vendors/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons/js/buttons.flash.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/datatables.net-scroller/js/dataTables.scroller.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/jszip/dist/jszip.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/pdfmake/build/pdfmake.min.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/pdfmake/build/vfs_fonts.js' %}"></script>
+
+{% endblock %}

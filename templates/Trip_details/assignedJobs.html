@@ -1,0 +1,61 @@
+{% extends "Trip_details/main/main.html" %}
+{% load static %}
+{% block title %}Assigned Jobs{% endblock title %}
+
+{% block headStyle %} 
+    <style>
+        .accept-job i{
+            font-size:2rem;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+
+<div class="container mt-2" id="container">
+    <div class="card border-0">
+        <div class="card-body">
+            <h5 class="card-title text-uppercase text-default">Assigned Jobs</h5>
+            <hr>     
+            <div class="row">
+                {% if jobs %}
+                    {% for job in jobs %}
+                        <div class="col-md-3 col-sm-3 mt-2 ">
+                            <div class="card rounded-0 text-dark bg-light mb-3">
+                                <div class="card-header text-uppercase rounded-0 {% if job.lateForStart %} bg-danger {% elif job.Status == 'Assigned' and job.notAcceptable == True %} bg-warning {% elif job.Status == 'Assigned' %} bg-default {% elif job.Status == 'Dispatched' %} bg-success {% elif job.Status == 'Complete' %} bg-dark {% endif %}  ">
+                                   <a href="{% url 'Account:singleJobView' id=job.id%}"> <h5  class="card-title d-inline-block text-white text-uppercase pt-1">{{job.Title}}</h5></a>
+                                   {% if not job.lateForStart %}
+                                    {% if job.Status == 'Assigned' and job.notAcceptable != True  %}
+                                    <a href="{% url 'Account:assignedJobAccept' id=job.id%}" class="accept-job float-end"><i class="fa-solid fa-circle-check px-1 text-white" title="Accept" ></i></a>                                   
+                                    {% elif job.Status == 'Dispatched' %}
+                                    <a href="{% url 'Account:finishJob' id=job.id %}" class="accept-job float-end"><i class="fa-solid fa-check-double px-1 text-white" title="Complete" ></i></a>
+                                    {% endif %}
+                                   {% endif %}
+                                </div>
+
+                                <div class="card-body">
+                                    <div>
+                                        <b style="font-size: 0.85rem;">Start Time: </b><span>{{job.Start_Date_Time}} </span>
+                                    </div>
+                                    <div>
+                                        <b style="font-size: 0.85rem;">End Time: </b><span>{{job.End_Date_Time}} </span>
+                                    </div>
+                                    
+                                    <h6 class="font-weight-bolder mt-2">{{job.Origin}}</h6>
+                                    <p class="card-text">{{job.Origin.address}}</p>
+                                </div>
+                              </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h6 class="text-muted">No Assigned Job Found</h6>
+                {% endif %}
+            </div>       
+
+        </div>
+    </div>
+</div>
+    
+{% endblock %}
+{% block footerStyle %}
+{% endblock  %}

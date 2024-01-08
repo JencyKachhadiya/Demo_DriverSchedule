@@ -1,0 +1,288 @@
+{% extends "Trip_details/main/main.html" %}
+{% load static %}
+{% block title %}Driver Trip Form 1{% endblock title %}
+
+{% block headStyle %} 
+    <link rel="stylesheet" href="{% static 'css/form.css' %}" />
+    <script src="{% static 'js/vendor/bootstrap5/dselect.js' %}"></script>
+    <!-- select2 for searching dropdown -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- Font Awesome -->
+    <link href="{% static 'Dashboard/vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <style>
+        .errorMsg {
+            font-size: 0.7rem;
+            color: rgb(255, 0, 0);
+            margin-top: 0.3rem;
+            list-style-type: none;
+        }
+
+        .isInvalid {
+            border: 1px solid rgb(255, 0, 0) !important;
+            border-radius: 7px !important;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial;
+        }
+
+        #mainCont .form-select {
+            text-align: left !important;
+            padding: 0.63rem 0.8rem;
+        }
+
+        #mainCont .dropdown-menu {
+            width: 100%;
+        }
+
+
+        #mainCont .mybtn {
+            width: 25% !important;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+
+            .mybtn {
+                width: 100% !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .col-md-4 {
+                flex-basis: 100%;
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+        }
+
+        .responsive-btn {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 45px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding: 7px 14px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 7px !important;
+            right: 10px !important;
+        }
+        #mainCont .navbar-brand {
+            font-size: 1.5rem; /* Adjust the font size */
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/driverSide_basic.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="container-fluid" id="mainCont">
+        <form id="signUpForm" action="{% url 'Account:createFormSession' %}" method="POST"
+            enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-header d-flex mb-4">
+                <span class="stepIndicator text-active">Trip details</span>
+                <span class="stepIndicatorOff text-secondary">Loads details</span>
+            </div>
+
+            <!-- Driverid, Clientid and truck number -->
+            <div class="row">
+                <div class="col-md-4 col-12">
+                    <div class="step">
+                        <div class="mb-3">
+                            <label for="driverId">Driver ID :</label>
+
+                            {% if driver_ids %}
+                            <input type="text" name="driverId" id="driverId" value="{% if driver_ids is not None %}{{driver_ids}}{% endif %}" readonly class="d-block" />
+                            {% endif %} 
+                            
+                            {% if drivers is not None%}
+                            <select name="driverId" class="form-select" id="driverId">
+                                <option value="" disabled selected>Select Driver Id</option>
+                                {% for driver in drivers %}
+                                <option value="{{ driver.driverId }}-{{driver.name}}">
+                                    {{ driver.driverId }} - {{driver.name}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+
+                            <i class="fa" aria-hidden="true"></i>
+                            <li class="errorMsg"></li>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="step">
+                        <div class="mb-3">
+                            <label for="clientId">Client Name :</label>
+                            
+                            {% if existingTodayTrip %}
+                                <input type="text" name="clientName" id="clientId" value="{% if existingTodayTrip %}{{existingTodayTrip.clientName}}{% endif %}" readonly class="d-block" />
+                            {% else %}
+                                <select name="clientName" class="form-select" id="clientId">
+                                    <option value="" disabled selected>Select Client Name</option>
+                                    {% for client_name in client_ids %}
+                                        <option value="{{ client_name }}">{{ client_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% endif %}
+                            <i class="fa" aria-hidden="true"></i>
+                            <li class="errorMsg"></li>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-4 col-12">
+                    <div class="step">
+                        <div class="mb-3">
+                            <label for="numberOfLoads">Truck No :</label>
+
+                            {% if existingTodayTrip %}
+                                <input type="text" name="truckNum" id="truckNum" value="{% if existingTodayTrip %}{{existingTodayTrip.truckNo}}{% endif %}" readonly class="d-block" />
+                            {% else %}
+                                <select id="truckNum" class="js-select2 form-control" disabled name="truckNum">
+                                    <option value="">Select an Item</option>
+                                </select>
+                            {% endif %}
+
+                            <i class="fa" aria-hidden="true"></i>
+                            <li class="errorMsg"></li>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Number of Logs, shift date and Shift type -->
+            <div class="row">
+                <div class="col-md-4 col-12">
+                    <div class="step">
+                        <div class="mb-3">
+                            <label for="numberOfLoads">Number of load :</label>
+                            <input type="number" min="1" id="numberOfLoads" name="numberOfLoads" value="{% if existingTodayTrip %}{{existingTodayTrip.numberOfLoads}}{% endif %}" {% if existingTodayTrip %}readonly{% endif %}/>
+                            <i class="fa" aria-hidden="true"></i>
+                            <li class="errorMsg"></li>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="step">
+                        <div class="mb-3">
+                            <label for="shiftType">Shift Type :</label>
+                            <select id="shiftType" class="form-select bg-white" name="shiftType" {% if existingTodayTrip %}readonly{% endif %}>
+                                <option selected disabled>Select Shift Type</option>
+                                <option value="Day" {% if existingTodayTrip.shiftType == "Day" %} selected{% endif %}>Day</option>
+                                <option value="Night" {% if existingTodayTrip.shiftType == "Night" %} selected{% endif %}>Night</option>
+                            </select>
+                            <i class="fa" aria-hidden="true"></i>
+                            <li class="errorMsg"></li>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="step">
+                        <div class="mb-3">
+                            <label for="shiftDate">Shift date:</label>
+                            <input type="date" id="shiftDate" name="shiftDate" value="{% if existingTodayTrip %}{{existingTodayTrip.shiftDate}}{% endif %}" {% if existingTodayTrip %}readonly{% endif %}/>
+                            <i class="fa" aria-hidden="true"></i>
+                            <li class="errorMsg"></li>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ---------------------------------------------------------------------------------------------------------- -->
+
+            <!-- Startdate and enddate and loadSheet-->
+            <div class="row">
+                <div class="col-md-4 col-12">
+                    <div class="step">
+                        <div class="mb-3">
+                            <label for="startTime">Start time :</label>
+                            <input type="time" name="startTime" id="startTime" value="{% if existingTodayTrip %}{{existingTodayTrip.startTime}}{% endif %}" {% if existingTodayTrip %}readonly{% endif %}/>
+                            <i class="fa" aria-hidden="true"></i>
+                            <li class="errorMsg"></li>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="step">
+                        <div class="mb-3">
+                            <label for="endTime">End time :</label>
+                            <input type="time" name="endTime" id="endTime" value="{% if existingTodayTrip %}{{existingTodayTrip.endTime}}{% endif %}" readonly/>
+                            <i class="fa" aria-hidden="true"></i>
+                            <li class="errorMsg"></li>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="step">
+                        <div class="mb-3">
+                            <label for="loadSheet">Upload Load Sheet :</label>
+                            <input type="file" placeholder="Load Sheet" name="loadSheet" class="p-2" id="loadSheet" accept=".jpg, .jpeg, .pdf" />
+                            <i class="fa" aria-hidden="true"></i>
+                            <li class="errorMsg"></li>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-lg-3 mb-1">
+                <textarea placeholder="Comments" name="comments" class="form-control"></textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-9 col-sm-9 pb-4">
+                    <input type="checkbox" name="dispute" id="dispute" class="w-auto" value="dispute">
+                    <label for="dispute" class="text-secondary" style="cursor: pointer;">Dispute</label>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <div class="form-footer">
+                        <input type="submit" id="nextBtn" value="Next"
+                            class="btn btn-default btn-lg responsive-btn " />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+{% block footerStyleEnd %}
+
+    <!-- select2 for searching dropdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+        integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static 'js/form1.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+            var currentDate = new Date();
+
+            var yesterdayDate = new Date(currentDate);
+            yesterdayDate.setDate(currentDate.getDate() - 1);
+
+            var currentDateFormatted = currentDate.toISOString().slice(0, 10);
+            var yesterdayDateFormatted = yesterdayDate.toISOString().slice(0, 10);
+
+            $('#shiftDate').attr('max', currentDateFormatted);
+            $('#shiftDate').attr('min', yesterdayDateFormatted);
+        });
+    </script>
+{% endblock  %}

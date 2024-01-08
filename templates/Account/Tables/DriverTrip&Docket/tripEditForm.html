@@ -1,0 +1,512 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Driver Trip &Docket Edit {% endblock %}
+{% block headStyle %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}" />
+<style>
+    .cuatom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(255, 0, 0) !important;
+        border-radius: 7px !important;
+    }
+
+    @media (max-width: 576px) {
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .cuatom-continer {
+            margin: 0;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <form class="" method="POST" action="{% url 'Account:driverEntryUpdate' ids=driverTrip.id%}" novalidate
+                    enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Driver Shift Details</h2>
+                            {% if driverTrip.verified is  False  %}
+                            <a href="{% url 'Account:driverDocketEntry' ids=driverTrip.id%}"
+                                class="float-right btn btn-dark">Add Docket</a>
+                                
+                            
+                            <label for="verified" class="float-right ml-2"
+                                style="margin-right: 1rem; padding-top:0.7rem;">Verified</label>
+                            <input type="checkbox" id="verified" name="verified"
+                                {% if driverTrip.verified %}checked{% endif %} class="float-right "
+                                style="margin-top: .8rem;">
+                            {% endif %}
+
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+                                <!-- driver-id client-name shift-type  -->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="driverId">Driver Id:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select name="driverId" class="form-control">
+                                            {% for D_id in Driver %}
+                                            <option value="{{D_id.driverId}}" {% if driverTrip.driverId.driverId == D_id.driverId %}selected="selected" {% endif %}>{{D_id.driverId}}-{{ D_id.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="clientName">Client Name :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select name="clientName" class="form-control">
+                                            {% for C_id in Client %}
+                                            <option value="{{ C_id.clientId }}" {% if driverTrip.clientName.clientId == C_id.clientId %}selected="selected" {%endif %}>{{ C_id.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="shiftType">ShiftType :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select name="shiftType" class="form-control">
+                                            <option value="Day" {% if driverTrip.shiftType == 'Day' %}selected="selected"{% endif %}>Day</option>
+                                            <option value="Night" {% if driverTrip.shiftType == 'Night' %}selected="selected" {% endif %}>Night</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- numberOfLoads truckNo  shiftDate  -->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="numberOfLoads">No. Of Loads:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{driverTrip.numberOfLoads}}" type="number"
+                                            name="numberOfLoads" required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="numberOfLoads">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="truckNo">Truck No:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select class="form-control" required id="truckNo" name="truckNo">
+                                            <option value="" disabled selected>Select Truck No</option>
+                                            {% for truck in trucks %}
+                                            <option value="{{ truck.adminTruckNumber }}" {% if driverTrip.truckNo == truck.adminTruckNumber %}selected="selected"{% endif %}>{{ truck.adminTruckNumber }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="shiftDate">Shift Date:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{driverTrip.shiftDate}}" type="date"
+                                            name="shiftDate" required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="shiftDate">
+                                    </div>
+                                </div>
+                                <!-- startTime    endTime    loadSheet -->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="startTime">Start Time :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{driverTrip.startTime}}" type="time"
+                                            name="startTime" required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="startTime">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="endTime">End Time :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{driverTrip.endTime}}" type="time"
+                                            name="endTime" required='required' style="padding: 0.25rem 0.2rem;"
+                                            id="endTime">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="loadSheet">loadSheet :<span class="required">*</span></label>
+                                    <a href="/{{driverTrip.loadSheet}}" class="text-primary"
+                                        target="_blank">loadSheet_file</a>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.noOfKm}}" type="file" name="loadSheet"
+                                            style="padding: 0.25rem 0.2rem;" id="noOfKm">
+                                    </div>
+                                </div>
+                                <!-- comment  -->
+                                <div class="col-md-12 col-sm-12">
+                                    <label for="comment">Comment :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <textarea placeholder="comment" name="comment"
+                                            class="form-control">{{driverTrip.comment}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% for item in driverDocket %}
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2> Load #{{ item.count_}} </h2>
+                            <div class="float-right">
+                                <input type="radio" id="tippingToYard{{item.count_}}" name="returnToYard{{item.count_}}" value="tippingToYard{{item.count_}}"
+                                style="margin-top: .8rem;"  onclick="returnToYard_({{item.count_}},this)" {% if item.tippingToYard %} checked {% endif %}>
+                                <label for="tippingToYard{{item.count_}}" class="ml-2"
+                                style="margin-right: 1rem; padding-top:0.7rem;">Tipping To Yard</label>
+                                <input type="radio" id="returnToYard{{item.count_}}" name="returnToYard{{item.count_}}" value="returnToYard{{item.count_}}"
+                                style="margin-top: .8rem;"  onclick="returnToYard_({{item.count_}},this)" {% if item.returnToYard %} checked {% endif %}>
+                                <label for="returnToYard{{item.count_}}" class="ml-2"
+                                    style="margin-right: 1rem; padding-top:0.7rem;">Return To Yard</label>
+
+                                <i class="fa fa-close text-danger ml-2" style="font-size: 1.2rem;" id="resetRadio{{item.count_}}" onclick="resetRadio({{item.count_}})"></i>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="custom-continer">
+
+                                <!-- shiftDate docketNumber docketFile  -->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="shiftDate{{item.count_}}">ShiftDate :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.shiftDate}}" type="date"
+                                            name="shiftDate{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="shiftDate{{item.count_}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="docketNumber{{item.count_}}">Docket Number :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.docketNumber}}" type="text"
+                                            name="docketNumber{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="docketNumber{{item.count_}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="docketFile{{item.count_}}">DocketFile :<span class="required">*</span></label>
+                                    <a href="/{{item.docketFile}}" class="text-primary" target="_blank">docketFile</a>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.docketFile}}" type="file"
+                                            name="docketFile{{item.count_}}" style="padding: 0.25rem 0.2rem;"
+                                            id="docketFile{{item.count_}}">
+                                    </div>
+
+                                </div>
+                                <!-- basePlant noOfKm  transferKM  -->
+                                <div class="col-md-4 col-sm-4 ">
+                                    <label for="basePlant{{item.count_}}">basePlant :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select name="basePlant{{item.count_}}" class="form-control">
+                                            {% for basePlant_ in basePlants %}
+                                            <option value="{{ basePlant_.id }}" {% if item.basePlant.basePlant == basePlant_.basePlant %}selected="selected" {% endif %}>{{ basePlant_.basePlant }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="noOfKm{{item.count_}}">No Of Km:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.noOfKm}}" type="number"
+                                            name="noOfKm{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="noOfKm{{item.count_}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="transferKM{{item.count_}}">Transfer Km :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.transferKM}}" type="number"
+                                            name="transferKM{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="transferKM{{item.count_}}">
+                                    </div>
+                                </div>
+                                <!--    returnQty  returnKm  waitingTimeStart      -->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="returnQty{{item.count_}}">Return Qty:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.returnQty}}" type="number"
+                                            name="returnQty{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="returnQty{{item.count_}}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="returnKm{{item.count_}}">Return Km:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.returnKm}}" type="number"
+                                            name="returnKm{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="returnKm{{item.count_}}" readonly>
+                                    </div>
+                                </div>
+                                {% comment %} {{item.waitingTimeStart}} {% endcomment %}
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="waitingTimeStart{{item.count_}}">Waiting Time Start :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  value="{{item.waitingTimeStart}}" type="time"
+                                            name="waitingTimeStart{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="waitingTimeStart{{item.count_}}" onchange="openWaitingTimeEnd(this,{{item.count_}})">
+                                    </div>
+                                </div>
+
+                                {% comment %} totalWaitingInMinute waitingTimeEnd surcharge_type {% endcomment %}
+                                {% comment %} {{item.waitingTimeEnd}} {% endcomment %}
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="waitingTimeEnd{{item.count_}}">Waiting Time End :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control"  value="{{item.waitingTimeEnd}}" type="time"
+                                            name="waitingTimeEnd{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="waitingTimeEnd{{item.count_}}" readonly onchange="countTotalWaitingTime(this,{{item.count_}})">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="totalWaitingInMinute{{item.count_}}">Total Waiting In Minute :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" readonly value="{{item.totalWaitingInMinute}}" type="number"
+                                            name="totalWaitingInMinute{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="totalWaitingInMinute{{item.count_}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="surcharge_type{{item.count_}}">Surcharge Type:<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <select name="surcharge_type{{item.count_}}" class="form-control" >
+                                            {% for surcharge in surcharges %}
+                                            <option value="{{surcharge.id}}" {% if item.surcharge_type.id == surcharge.id %} selected {% endif %} >{{surcharge.surcharge_Name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <!--     surcharge_duration    cubicMl standByStartTime -->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="surcharge_duration">Surcharge Duration :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.surcharge_duration}}" type="number"
+                                            name="surcharge_duration{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="surcharge_duration">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="cubicMl{{item.count_}}">Cubic Meter :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.cubicMl}}" type="number"
+                                            name="cubicMl{{item.count_}}" required="required"
+                                            style="padding: 0.25rem 0.2rem;" id="cubicMl{{item.count_}}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="standByStartTime{{item.count_}}">StandBy start Time :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.standByStartTime}}" type="time"
+                                            name="standByStartTime{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="standByStartTime{{item.count_}}" onchange="openStandByEnd(this,{{item.count_}})">
+                                    </div>
+                                </div>
+                                <!--     standByEndTime   others  comment-->
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="standByEndTime{{item.count_}}">StandBy End Time :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.standByEndTime}}" type="time" readonly
+                                            name="standByEndTime{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="standByEndTime{{item.count_}}" onchange="countStandBySlot(this,{{item.count_}})">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="standBySlot{{item.count_}}">Stand By Slot :<span
+                                            class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" readonly  type="number"
+                                            name="standBySlot{{item.count_}}" required='required'
+                                            style="padding: 0.25rem 0.2rem;" id="standBySlot{{item.count_}}" value="{% if driverDocket %}{{item.standBySlot}}{% else %}0{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <label for="others{{item.count_}}">Others :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <input class="form-control" value="{{item.others}}" type="number"
+                                            name="others{{item.count_}}" style="padding: 0.25rem 0.2rem;"
+                                            required="required" id="others{{item.count_}}">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-12 col-sm-12">
+                                    <label for="comment{{item.count_}}">Comment :<span class="required">*</span></label>
+                                    <div class="field item form-group">
+                                        <textarea placeholder="comment" name="comment{{item.count_}}"
+                                            class="form-control">{{item.comment}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if driverTrip.verified is  False  %}
+                    <div class="col-md-12 text-right p-0">
+                        <button type='submit' style="margin: 0px;" class="btn btn-primary px-4">Save</button>
+                    </div>
+                    {% endif%}
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+{% endblock %}
+
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+<script>
+    const csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    $(document).ready(function() {
+        if (!$('#verified').val()) {
+            $(':input').prop('disabled', true);
+            $('#verified').css('display', 'none');
+        }
+    });
+    function hideshow() {
+        var password = document.getElementById("password1");
+        var slash = document.getElementById("slash");
+        var eye = document.getElementById("eye");
+
+        if (password.type === 'password') {
+            password.type = "text";
+            slash.style.display = "block";
+            eye.style.display = "none";
+        }
+        else {
+            password.type = "password";
+            slash.style.display = "none";
+            eye.style.display = "block";
+        }
+
+    }
+    // A "<form>" element is optionally passed as an argument, but is not a must
+    var validator = new FormValidator({
+        "events": ['blur', 'input', 'change']
+    }, document.forms[0]);
+    // on form "submit" event
+    document.forms[0].onsubmit = function (e) {
+        var submit = true,
+            validatorResult = validator.checkAll(this);
+        console.log(validatorResult);
+        return !!validatorResult.valid;
+    };
+    // on form "reset" event
+    document.forms[0].onreset = function (e) {
+        validator.reset();
+    };
+    // stuff related ONLY for this demo page:
+    $('.toggleValidationTooltips').change(function () {
+        validator.settings.alerts = !this.checked;
+        if (this.checked)
+            $('form .alert').remove();
+    }).prop('checked', false);
+
+   function returnToYard_(id,tag){
+        let selected = $(`#${tag.id}`).is(':checked')
+
+        if(selected){
+            $(`#returnQty${id}`).removeAttr('readonly')
+            $(`#returnKm${id}`).removeAttr('readonly')
+        }else{
+            $(`#returnQty${id}`).attr('readonly',true)
+            $(`#returnKm${id}`).attr('readonly',true)
+        }
+    }
+
+    function resetRadio(id){
+        $(`#tippingToYard${id}`).removeAttr('checked')
+        $(`#returnToYard${id}`).removeAttr('checked')
+        $(`#returnQty${id}`).attr('readonly',true)
+        $(`#returnKm${id}`).attr('readonly',true)
+    }
+
+    function openWaitingTimeEnd(lineData,count_){
+        let waitingTimeStart = lineData.value 
+        if(waitingTimeStart){
+            $(`#waitingTimeEnd${count_}`).removeAttr('readonly');
+        }
+    }
+    function openStandByEnd(lineData,count_){
+        let standByEndTime = lineData.value 
+        if(standByEndTime){
+            $(`#standByEndTime${count_}`).removeAttr('readonly');
+        }
+    }
+
+    function countTotalWaitingTime(lineData, count_){
+        let waitingTimeStart = $(`#waitingTimeStart${count_}`).val()
+        let waitingTimeEnd = lineData.value 
+
+        if(waitingTimeStart && waitingTimeEnd){
+            $.ajax({
+                type: "POST",
+                url: "/account/driverDocket/waitingTime/count/",
+                data: {
+                    tripId : {{driverTrip.id}},
+                    waitingTimeEnd : waitingTimeEnd,
+                    waitingTimeStart : waitingTimeStart,
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                success: function (data) {
+                    console.log(data.totalWaitingTime)
+                    $(`#totalWaitingInMinute${count_}`).val(data.totalWaitingTime)
+                },
+            });
+        }
+    }
+
+    function countStandBySlot(lineData,count_){
+        let standByStartTime = $(`#standByStartTime${count_}`).val()
+        let standByEndTime = $(`#standByEndTime${count_}`).val()
+
+        if(standByStartTime && standByEndTime){
+            $.ajax({
+                type: "POST",
+                url: "/account/driverDocket/standByTime/count/",
+                data: {
+                    tripId : {{driverTrip.id}},
+                    standByStartTime : standByStartTime,
+                    standByEndTime : standByEndTime,
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                success: function (data) {
+                    console.log(data.totalWaitingTime)
+                    $(`#standBySlot${count_}`).val(data.standBySlot)
+                },
+            });
+        }
+    }
+
+</script>
+{% endblock %}

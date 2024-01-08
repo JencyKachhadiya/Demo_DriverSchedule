@@ -1,0 +1,88 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Sub Groups Form {% endblock %}
+{% block content %}
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2></h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="cuatom-continer">
+                            <form class="" action="" method="POST" novalidate>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="fleet" class="col-form-label col-md-3 col-sm-3 label-align">Fleet
+                                            :<span class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <select name="fleet" class="form-control" id="fleet">
+                                                <option value="fleet" selected>Select a fleet</option>
+                                                <option value="">fleet 1</option>
+                                                <option value="">fleet 2</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="groups" class="col-form-label col-md-3 col-sm-3 label-align">Groups
+                                            :<span class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <select name="groups" class="form-control" id="groups">
+                                                <option value="groups" selected>Select a groups</option>
+                                                <option value="">Group 1</option>
+                                                <option value="">Group 2</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="subGroups" class="col-form-label col-md-3 col-sm-3 label-align">Sub
+                                            Groups :<span class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <input class="form-control" name="subGroups" required="required"
+                                                id="subGroups" type="text" value="" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="vehicleType"
+                                            class="col-form-label col-md-3 col-sm-3 label-align">Vehicle Type :<span
+                                                class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <select name="vehicleType" class="form-control" id="vehicleType">
+                                                <option value="vehicleType" selected>Select a vehicle type</option>
+                                                <option value="">Vehicle 1</option>
+                                                <option value="">Vehicle 2</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12">
+                                        <label for="serviceGroups"
+                                            class="col-form-label col-md-3 col-sm-3 label-align">Service Groups :<span
+                                                class="required">*</span></label>
+                                        <div class="field item form-group col-md-6 col-sm-6">
+                                            <select name="serviceGroups" class="form-control" id="serviceGroups">
+                                                <option value="serviceGroups" selected>Select a service groups</option>
+                                                <option value="">service group 1</option>
+                                                <option value="">service group 2</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-9 col-sm-9 text-right">
+                                        <button type='reset' class="btn btn-success px-4 ">Reset</button>
+                                        <button type='submit' class="btn btn-primary px-4">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

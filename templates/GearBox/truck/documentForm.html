@@ -1,0 +1,217 @@
+{% extends "main/main.html" %}
+{% load static %}
+{% block title %} | Truck Form {% endblock %}
+{% block headStyle %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}" />
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<style>
+    .custom-continer {
+        margin: 0 5rem;
+    }
+
+    .errorMsg {
+        font-size: 0.7rem;
+        color: rgb(255, 0, 0);
+        margin-top: 0.3rem;
+        list-style-type: none;
+    }
+
+    .isInvalid {
+        border: 1px solid rgb(255, 0, 0) !important;
+        border-radius: 7px !important;
+    }
+
+
+
+    @media (max-width: 576px) {
+        .custom-continer {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .custom-continer {
+            margin: 0;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="custom-container">
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>{% if data %}View truck detailsAdd Truck {% endif %}</h2>
+                        {% if data %}
+                        <a href="{% url 'gearBox:truckConnectionAddView' id=data.id %}" class="btn btn-sm btn-default float-right">Add connection</a>
+                        {% endif %}
+                        <div class="clearfix"></div>
+                    </div>
+               
+                    <div id="wizard" class="form_wizard wizard_horizontal">
+                        <ul class="wizard_steps">
+                          <li>
+                            <a href="javascript:void(0)" class="selected">
+                                <span class="step_no" title="Information"><i class="fa fa-info"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="selected">
+                                <span class="step_no" title="Axles"><i class="fa fa-bars"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="selected">
+                                <span class="step_no" title="Settings"><i class="fa fa-gear"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="selected">
+                                <span class="step_no" title="Reminders"><i class="fa fa-bell-o"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="selected">
+                                <span class="step_no" title="Parts"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="selected">
+                                <span class="step_no" title="History"><i class="fa fa-history"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="selected">
+                                <span class="step_no" title="Odometer"><i class="fa  fa-tachometer"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="selected">
+                                <span class="step_no" title="Compliance"><i class="fa fa-comments"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" class="disabled">
+                                <span class="step_no" title="Documents"><i class="fa fa-file-pdf-o"></i></span>
+                                <span class="step_descr">
+                                    <br />
+                                </span>
+                            </a>
+                          </li>
+                        </ul>
+                       
+  
+                    </div> 
+                    
+                    <form action="#" method="post">
+                        {% csrf_token %}
+                        <div class="x_content">
+                            <div class="col-md-4 col-sm-4">
+                                <label for="truckNo" style="margin-bottom: 0.3rem!important;">Fleet : <span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control "disabled type="text" name="truckNo" required='required' style="padding: 0.25rem 0.2rem;" id="truckNo">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 col-sm-4">
+                                <label for="UploadFile" style="margin-bottom: 0.3rem!important;">Upload File : <span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control"  type="file" name="UploadFile" required='required' style="padding: 0.25rem 0.2rem;" id="UploadFile">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <label for="tags" style="margin-bottom: 0.3rem!important;">Tags : <span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <input class="form-control"  type="text" name="tags" required='required' style="padding: 0.25rem 0.2rem;" id="tags">
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-sm-12">
+                                <label for="description" style="margin-bottom: 0.3rem!important;">Description : <span class="required">*</span></label>
+                                <div class="field item form-group">
+                                    <textarea name="description" id=description"  rows="2"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-am-12 text-right">
+                                {% if not data  %}
+                                <button type='submit' class="btn btn-default px-5 mt-4">Submit</button> 
+                                {% endif %}
+                            </div>                       
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+
+{% block footerStyle %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{% static 'Dashboard/vendors/validator/multifield.js' %}"></script>
+<script src="{% static 'Dashboard/vendors/validator/validator.js' %}"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+    integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+    // initialize a validator instance from the "FormValidator" constructor.
+    // A "<form>" element is optionally passed as an argument, but is not a must
+    var validator = new FormValidator({
+        "events": ['blur', 'input', 'change']
+    }, document.forms[0]);
+    // on form "submit" event
+    document.forms[0].onsubmit = function (e) {
+        var submit = true,
+            validatorResult = validator.checkAll(this);
+        console.log(validatorResult);
+        return !!validatorResult.valid;
+    };
+    // on form "reset" event
+    document.forms[0].onreset = function (e) {
+        validator.reset();
+    };
+    // stuff related ONLY for this demo page:
+    $('.toggleValidationTooltips').change(function () {
+        validator.settings.alerts = !this.checked;
+        if (this.checked)
+            $('form .alert').remove();
+    }).prop('checked', false);
+
+</script>
+{% endblock %}
+{% endblock %}
