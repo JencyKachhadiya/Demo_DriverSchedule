@@ -1,0 +1,156 @@
+
+
+#signUpForm {
+    max-width: 80%;
+    background-color: #ffffff;
+    margin: 40px auto;
+    padding: 40px;
+    box-shadow: 0px 6px 18px rgb(0 0 0 / 9%);
+    border-radius: 12px;
+}
+
+#signUpForm .form-header {
+    gap: 5px;
+    text-align: center;
+    font-size: .9em;
+}
+
+#signUpForm .form-header .stepIndicator,
+#signUpForm .form-header .stepIndicatorOff {
+    position: relative;
+    flex: 1;
+    padding-bottom: 30px;
+    font-size: 1rem;
+}
+
+#signUpForm .form-header .stepIndicator.active {
+    font-weight: 600;
+}
+
+#signUpForm .form-header .stepIndicator.finish {
+    font-weight: 600;
+    color: #2A3F54;
+}
+
+#signUpForm .form-header .stepIndicator::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 7.5px;
+    transform: translateX(-50%);
+    z-index: 9;
+    width: 25%;
+    height: 4px;
+    background-color: #2A3F54;
+    border-radius: 5%;
+    /* border: 3px solid #ecf5f4; */
+}
+
+#signUpForm .form-header .stepIndicator.active::before {
+    background-color: #a7ede8;
+    border: 3px solid #d5f9f6;
+}
+
+#signUpForm .form-header .stepIndicator.finish::before {
+    background-color: #2A3F54;
+    border: 3px solid #b7e1dd;
+}
+
+#signUpForm .form-header .stepIndicator::after {
+    content: "";
+    position: absolute;
+    left: 10%;
+    bottom: 8px;
+    width: 80%;
+    height: 3px;
+    background-color: #6d92b7;
+}
+
+#signUpForm .form-header .stepIndicator.active::after {
+    background-color: #a7ede8;
+}
+
+#signUpForm .form-header .stepIndicator.finish::after {
+    background-color: #2A3F54;
+}
+
+#signUpForm .step label,
+.base-label {
+    color: gray;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+#signUpForm input,
+#signUpForm textarea {
+    padding: 0.7rem 0.8rem;
+    font-size: 0.9rem;
+    width: 100%;
+    border: 1px solid #e3e3e3;
+    border-radius: 5px;
+}
+
+#signUpForm input:focus,
+#signUpForm textarea:focus {
+    border: 1px solid #2A3F54;
+    outline: 0;
+}
+
+#signUpForm input.invalid {
+    border: 1px solid #ffaba5;
+}
+
+#signUpForm .form-footer {
+    overflow: auto;
+    gap: 20px;
+}
+
+#signUpForm .form-footer button,
+#signUpForm .form-footer a,
+#signUpForm .form-footer #nextBtn {
+    background-color: #2A3F54;
+    border: 1px solid #2A3F54 !important;
+    color: #ffffff;
+    border: none;
+    /* padding: 13px 30px; */
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 5px;
+    flex: 1;
+    margin-top: 5px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    float: right!important;
+}
+
+#signUpForm .form-footer button:hover {
+    opacity: 0.8;
+}
+
+#signUpForm .form-footer #prevBtn {
+    background-color: #fff;
+    color: #2A3F54;
+    cursor: pointer;
+    padding-top: 0.5em;
+}
+
+#signUpForm .text-active {
+    font-size: 1.05rem !important;
+    color: #2A3F54;
+    font-weight: 900;
+}
+
+.text-basic {
+    color: #2A3F54 !important;
+}
+@media (max-width: 768px) {
+    /* .container {
+        padding: 0 15px;
+    } */
+
+    #signUpForm{
+        max-width: 100%;
+        padding: 20px;
+    }
+}

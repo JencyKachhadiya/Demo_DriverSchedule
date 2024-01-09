@@ -1,0 +1,26 @@
+nav.navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+}
+
+nav .dropdown-menu[data-bs-popper] {
+    top: 100%;
+    left: -115px;
+    margin-top: var(--bs-dropdown-spacer);
+}
+
+nav .dropdown-menu {
+    background-color: #2a3f54;
+    border: none;
+    border-radius: 0 !important;
+}
+
+nav .dropdown-item {
+    color: #9fa8b2;
+}
+
+.dropdown-item:hover {
+    color: #c6c6c6;
+    background-color: #2a3f54;
+}
