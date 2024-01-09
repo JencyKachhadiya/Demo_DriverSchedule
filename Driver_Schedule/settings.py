@@ -137,7 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    os.path.join(BASE_DIR, 'static'),
 ]
 
 EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
@@ -150,7 +150,5 @@ EMAIL_USE_SSL = False
 
 MODEL_TO_CSV_FILE_NAME = '' 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 CSRF_TRUSTED_ORIGINS = ['https://driverschedule.azurewebsites.net','https://*.127.0.0.1','https://*.azurewebsites.net']
-
